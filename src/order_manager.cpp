@@ -245,6 +245,29 @@ ros::NodeHandle* AriacOrderManager::getnode() {
 //
 //}
 
+void AriacOrderManager::remove_part() {
+
+    // remove element of the grabbed part from the conveyor_order_parts
+    conveyor_order_parts.erase(conveyor_order_parts.begin());
+}
+
+void AriacOrderManager::drop_part_to_agv(const geometry_msgs::Pose initial_pose, geometry_msgs::Pose final_pose){
+
+	// GoToPose(final_pose);
+	// GripperToggle(false);
+
+	if (gripper_state_){//--while the part is still attached to the gripper
+		//--move the robot to the end of the rail
+		ROS_INFO_STREAM("Moving towards AGV1...");
+		robot_move_group_.setJointValueTarget(final_pose);
+		this->Execute();
+		ros::Duration(1.0).sleep();
+		ROS_INFO_STREAM("Actuating the gripper...");
+		this->GripperToggle(false);
+	}
+
+}
+
 void AriacOrderManager::pathplanning(const geometry_msgs::TransformStamped& msg) {
 	segrgateorders(); // @TODO Srinivas segregate parts from order into two vectors  bin_order_parts and conveyor_order_parts
 

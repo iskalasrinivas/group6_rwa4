@@ -1,4 +1,4 @@
-# group6_rwa3
+# group6_rwa4
 Build Instructions
 1. Unzip the files to "catkin_ws/src"
 2. Change directory to "catkin_ws" and run following command in the terminal:

@@ -1,4 +1,3 @@
-
 #ifndef GROUP6_RWA4_SENSOR
 #define GROUP6_RWA4_SENSOR
 #include <ariac_order_part.h>
@@ -40,6 +39,7 @@ private:
 	geometry_msgs::TransformStamped transformStamped2;
 	geometry_msgs::TransformStamped transformStamped3;
 	tf2_ros::Buffer tfBuffer;
+    std::map<std::string, AriacOrderPart> all_binParts;
 
 	tf2_ros::TransformBroadcaster br_w_s;
 	tf2_ros::TransformBroadcaster br_s_c;

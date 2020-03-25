@@ -39,6 +39,9 @@ private:
 	std::map<std::string, std::vector<std::string>> product_frame_list_;
 	osrf_gear::Order order_;
 	bool task_pending;
+    std::map<std::string, AriacOrderPart> all_orderParts;
+    std::vector<AriacOrderPart> conveyor_order_parts;
+    std::vector<AriacOrderPart> bin_order_parts;
 
 //	RobotController sensors_;
 
@@ -51,7 +54,7 @@ public:
 	std::map<std::string, std::list<std::pair<std::string,geometry_msgs::Pose>>> GetOrder();
 	bool PickAndPlace(std::pair<std::string,geometry_msgs::Pose>,int );
 	std::vector<std::string> getProductType();
-	void setProductType();
+	void setOrderParts();
 	void SubmitAGV(int);
 	ros::NodeHandle* getnode();
 

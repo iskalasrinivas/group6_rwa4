@@ -10,7 +10,7 @@ class AriacOrderPart {
 private:
 	std::string part_type_;
 	geometry_msgs::Pose part_pose_;
-	int part_frame_;
+	int num_parts;
 
 public:
 	AriacOrderPart();
@@ -18,10 +18,12 @@ public:
 
 
 	void set_part_type(std::string);
-	void set_part_frame(int);
+	//void set_part_frame(int);
 	void set_part_pose(geometry_msgs::Pose);
 	const std::string get_part_type();
-	const int get_part_frame();
+	int get_num_parts();
+    void increment();
+    void decrement();
 	const geometry_msgs::Pose get_part_pose();
 
 

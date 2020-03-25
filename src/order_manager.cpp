@@ -29,10 +29,10 @@ void AriacOrderManager::OrderCallback(const osrf_gear::Order::ConstPtr& order_ms
 	ROS_WARN(">>>>> OrderCallback");
 	received_orders_.push_back(*order_msg);
 	ROS_INFO_STREAM("no of orders "<< received_orders_.size() << std::endl);
-	setProductType();
+	setOrderParts();
 }
 
-void AriacOrderManager::setProductType(){
+void AriacOrderManager::setOrderParts(){
 	ROS_INFO_STREAM("reading order." << std::endl);
 
 	for (const auto &order:received_orders_) {
@@ -43,19 +43,24 @@ void AriacOrderManager::setProductType(){
 			auto products = shipment.products;
 
 			for (const auto &product: products) {
-				product_type_pose_.first = product.type;
-				product_type.push_back(product.type);
+
+                std::string part_type = product.type;
+                if(all_orderParts[part_type]){
+                    all_orderParts[part_type].increment();
+                } else {
+                    AriacOrderPart order_part;
+                    order_part.set_part_type (product.type);
+                    order_part.set_part_pose (product.pose);
+                    all_orderParts.insert({part_type, order_part});
+                }
+
 
 			}
 		}
 	}
-	ROS_INFO_STREAM("no of products "<< product_type.size() << std::endl);
-
-
 }
 
 std::vector<std::string> AriacOrderManager::getProductType(){
-
 
 	return product_type;
 }
@@ -81,6 +86,7 @@ boost::optional<std::string> AriacOrderManager::GetProductFrame(std::string prod
 	}
 
 }
+
 
 
 
@@ -244,6 +250,23 @@ ros::NodeHandle* AriacOrderManager::getnode() {
 //	}
 //
 //}
+
+void AriacOrderManager::segregateOrders(){
+    for (const auto &orderPart: all_orderParts){
+        for(const auto &binPart: bin_parts){
+            auto oPart = orderPart->second;
+            auto bPart = binPart-> second;
+            if(oPart.get_part_type == bPart.get_part_type
+                           && bPart.get_num_parts > oPart.get_num_parts){
+                               bin_order_parts.push_back(oPart);
+                           }
+            else{
+                conveyor_order_parts.push_back(oPart);
+            }
+        }
+    }
+
+}
 
 void AriacOrderManager::pathplanning(const geometry_msgs::TransformStamped& msg) {
 	segrgateorders(); // @TODO Srinivas segregate parts from order into two vectors  bin_order_parts and conveyor_order_parts

@@ -269,7 +269,7 @@ void AriacOrderManager::segregateOrders(){
 }
 
 void AriacOrderManager::pathplanning(const geometry_msgs::TransformStamped& msg) {
-	segrgateorders(); // @TODO Srinivas segregate parts from order into two vectors  bin_order_parts and conveyor_order_parts
+	segregateorders(); // @TODO Srinivas segregate parts from order into two vectors  bin_order_parts and conveyor_order_parts
 
 	while(conveyor_order_parts.size() != 0) {
 

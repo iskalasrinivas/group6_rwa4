@@ -55,6 +55,7 @@ public:
 	bool PickAndPlace(std::pair<std::string,geometry_msgs::Pose>,int );
 	std::vector<std::string> getProductType();
 	void setOrderParts();
+	void segregateOrders();
 	void SubmitAGV(int);
 	ros::NodeHandle* getnode();
 

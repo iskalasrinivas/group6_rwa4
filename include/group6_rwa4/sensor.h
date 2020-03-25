@@ -33,13 +33,17 @@ private:
 
 	ros::NodeHandle sensor_nh_;
 
+	ros::Subscriber camera_1_subscriber_;
 	ros::Subscriber camera_4_subscriber_;
+	ros::Subscriber camera_5_subscriber_;
 	ros::Subscriber breakbeam_subscriber;
+
 	geometry_msgs::TransformStamped transformStamped1;
 	geometry_msgs::TransformStamped transformStamped2;
 	geometry_msgs::TransformStamped transformStamped3;
 	tf2_ros::Buffer tfBuffer;
-    std::map<std::string, AriacOrderPart> all_binParts;
+    std::map<std::string, std::map<std::string, > all_binParts;
+
 
 	tf2_ros::TransformBroadcaster br_w_s;
 	tf2_ros::TransformBroadcaster br_s_c;
@@ -55,7 +59,8 @@ public:
 	~AriacSensorManager();
 	void setPose(const geometry_msgs::Pose pose, geometry_msgs::TransformStamped &);
 	void setPose(const geometry_msgs::Pose pose, geometry_msgs::Pose &);
-	void logicalCamera4Callback(const osrf_gear::LogicalCameraImage::ConstPtr &);
+	void beltlogicalCameraCallback(const osrf_gear::LogicalCameraImage::ConstPtr &);
+	void binlogicalCameraCallback(const osrf_gear::LogicalCameraImage::ConstPtr &);
 	void breakBeamCallback(const osrf_gear::Proximity::ConstPtr &);
 	bool isObjectDetected();
 

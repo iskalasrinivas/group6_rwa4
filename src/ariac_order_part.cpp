@@ -20,6 +20,10 @@ void AriacOrderPart::set_part_pose(geometry_msgs::Pose part_pose){
     part_pose_ = part_pose;
 };
 
+void AriacOrderPart::set_current_pose(geometry_msgs::Pose pose) {
+    current_pose = pose;
+}
+
 const std::string AriacOrderPart::get_part_type(){
     return part_type_;
 };

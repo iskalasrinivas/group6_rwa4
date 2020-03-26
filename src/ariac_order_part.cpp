@@ -16,12 +16,12 @@ void AriacOrderPart::set_part_type(std::string part_type){
 // };
 
 
-void AriacOrderPart::set_part_pose(geometry_msgs::Pose part_pose){
-    part_pose_ = part_pose;
+void AriacOrderPart::set_end_pose(geometry_msgs::Pose part_pose){
+    end_pose_ = part_pose;
 };
 
 void AriacOrderPart::set_current_pose(geometry_msgs::Pose pose) {
-    current_pose = pose;
+    current_pose_ = pose;
 }
 
 const std::string AriacOrderPart::get_part_type(){
@@ -32,18 +32,6 @@ const std::string AriacOrderPart::get_part_type(){
 //     return part_frame_;
 // };
 
-int AriacOrderPart::get_num_parts(){
-    return num_parts;
-}
-
-void AriacOrderPart::increment(){
-    num_parts += 1;
-}
-
-void AriacOrderPart::decrement(){
-    num_parts -= 1;
-}
-
-const geometry_msgs::Pose AriacOrderPart::get_part_pose(){
-    return part_pose_ ;
+const geometry_msgs::Pose AriacOrderPart::get_end_pose(){
+    return end_pose_ ;
 };

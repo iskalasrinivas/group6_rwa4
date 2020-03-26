@@ -16,10 +16,8 @@
 
 #include "robot_controller.h"
 #include "ariac_order_part.h"
-//#include "sensor.h"
+#include "sensor.h"
 
-// class AriacSensorManager;
-//class RobotController;
 using std::vector;
 
 class AriacOrderManager {
@@ -39,14 +37,15 @@ private:
 	std::map<std::string, std::vector<std::string>> product_frame_list_;
 	osrf_gear::Order order_;
 	bool task_pending;
-    std::map<std::string, AriacOrderPart> all_orderParts;
-    std::vector<AriacOrderPart> conveyor_order_parts;
-    std::vector<AriacOrderPart> bin_order_parts;
+    std::map<geometry_msgs::Pose, std::map<std::string, std::vector<geometry_msgs::Pose>>>* all_bin_parts;
+    std::map<std::string, std::vector<AriacOrderPart>> all_orderParts;
+    std::map<std::string, std::vector<AriacOrderPart>> conveyor_order_parts;
+    std::map<std::string, std::vector<AriacOrderPart>> bin_order_parts;
 
 //	RobotController sensors_;
 
 public:
-	AriacOrderManager();
+	AriacOrderManager(std::map<geometry_msgs::Pose, std::map<std::string, std::vector<geometry_msgs::Pose>>>*);
 	~AriacOrderManager();
 	void OrderCallback(const osrf_gear::Order::ConstPtr&);
 	void ExecuteOrder();
@@ -55,6 +54,8 @@ public:
 	bool PickAndPlace(std::pair<std::string,geometry_msgs::Pose>,int );
 	std::vector<std::string> getProductType();
 	void setOrderParts();
+    void setCurrentPose(std::vector<AriacOrderPart> &ariacOrderparts,
+                                           const std::vector<geometry_msgs::Pose> &vecPose);
 	void segregateOrders();
 	void SubmitAGV(int);
 	ros::NodeHandle* getnode();

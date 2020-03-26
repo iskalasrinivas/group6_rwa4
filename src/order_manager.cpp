@@ -12,7 +12,7 @@
 
 
 //AriacOrderManager::AriacOrderManager(): arm1_{"arm1"}, arm2_{"arm2"}
-AriacOrderManager::AriacOrderManager():  arm1_{"arm1"} {
+AriacOrderManager::AriacOrderManager(std::map<geometry_msgs::Pose, std::map<std::string, std::vector<geometry_msgs::Pose>>>* abp):  arm1_{"arm1"}, all_bin_parts(abp){
 	//	order_manager_nh_= nh;
 	//	wayPoint_subscriber = order_manager_nh_.subscribe(
 	//			"/ariac/logical_sensor_4/tracking_object", 10, &AriacOrderManager::pathplanningCallback, this);
@@ -43,17 +43,22 @@ void AriacOrderManager::setOrderParts(){
 			auto products = shipment.products;
 
 			for (const auto &product: products) {
-
                 std::string part_type = product.type;
-                if(all_orderParts[part_type]){
-                    all_orderParts[part_type].increment();
-                } else {
+                if(all_orderParts.count(part_type)){
+                    auto vector = all_orderParts[part_type];
                     AriacOrderPart order_part;
                     order_part.set_part_type (product.type);
-                    order_part.set_part_pose (product.pose);
-                    all_orderParts.insert({part_type, order_part});
-                }
+                    order_part.set_end_pose (product.pose);
+                    vector.push_back(order_part);
+                } else{
+                    AriacOrderPart order_part;
+                    order_part.set_part_type (product.type);
+                    order_part.set_end_pose (product.pose);
+                    std::vector<AriacOrderPart> vec;
+                    vec.push_back(order_part);
+                    all_orderParts.insert({part_type, vec});
 
+                }
 
 			}
 		}
@@ -251,18 +256,39 @@ ros::NodeHandle* AriacOrderManager::getnode() {
 //
 //}
 
+std::map<geometry_msgs::Pose, std::map<std::string, std::vector<geometry_msgs::Pose>>>* all_bin_parts;
+std::map<std::string, std::vector<AriacOrderPart>> all_orderParts;
+std::map<std::string, std::vector<AriacOrderPart>> conveyor_order_parts;
+std::map<std::string, std::vector<AriacOrderPart>> bin_order_parts;
+
+void AriacOrderManager::setCurrentPose(std::vector<AriacOrderPart> &ariacOrderparts,
+                                                const std::vector<geometry_msgs::Pose> &vecPose) {
+    std::vector<geometry_msgs::Pose>::const_iterator  it_vecPose = vecPose.begin();
+    for (auto &orderPart: ariacOrderparts) {
+        orderPart.set_current_pose(*it_vecPose);
+        ++it_vecPose;
+
+    }
+}
+
 void AriacOrderManager::segregateOrders(){
+
     for (const auto &orderPart: all_orderParts){
-        for(const auto &binPart: bin_parts){
-            auto oPart = orderPart->second;
-            auto bPart = binPart-> second;
-            if(oPart.get_part_type == bPart.get_part_type
-                           && bPart.get_num_parts > oPart.get_num_parts){
-                               bin_order_parts.push_back(oPart);
-                           }
-            else{
-                conveyor_order_parts.push_back(oPart);
+        for(const auto &binPart: *all_bin_parts){
+            auto oVecPart = orderPart.second;
+            auto oType = orderPart.first;
+            auto binMapPart = binPart.second;
+            for(auto bPart: binMapPart){
+                if(oType == bPart.first && bPart.second.size() > oVecPart.size()){
+                    setCurrentPose(oVecPart, bPart.second);
+                    bin_order_parts.insert({oType, oVecPart});
+                }
+                else{
+                    conveyor_order_parts.insert({oType, oVecPart});
+                }
+
             }
+
         }
     }
 

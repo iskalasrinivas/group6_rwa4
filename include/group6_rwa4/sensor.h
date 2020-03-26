@@ -20,17 +20,15 @@
 #include <osrf_gear/Proximity.h>
 #include "order_manager.h"
 
-using std::vector;
 
-//class AriacOrderManager;
+class AriacOrderManager;
 
 class AriacSensorManager {
 
 
 private:
-	AriacOrderManager* order_manager_;
-
-
+    std::map<geometry_msgs::Pose, std::map<std::string, std::vector<geometry_msgs::Pose>>> all_binParts;
+	AriacOrderManager order_manager_ ;
 	ros::NodeHandle sensor_nh_;
 
 	ros::Subscriber camera_1_subscriber_;
@@ -42,7 +40,7 @@ private:
 	geometry_msgs::TransformStamped transformStamped2;
 	geometry_msgs::TransformStamped transformStamped3;
 	tf2_ros::Buffer tfBuffer;
-    std::map<std::string, std::map<std::string, > all_binParts;
+
 
 
 	tf2_ros::TransformBroadcaster br_w_s;
@@ -55,12 +53,16 @@ private:
 	//	std::map<std::string, std::vector<geometry_msgs::Pose>> part_list_;
 	//	std::map<std::string, std::vector<std::string>> product_frame_list_;
 public:
-	AriacSensorManager(AriacOrderManager* );
+	AriacSensorManager();
 	~AriacSensorManager();
 	void setPose(const geometry_msgs::Pose pose, geometry_msgs::TransformStamped &);
 	void setPose(const geometry_msgs::Pose pose, geometry_msgs::Pose &);
+    void setPose(const geometry_msgs::TransformStamped transformStamped, geometry_msgs::Pose &pose);
+    std::map<geometry_msgs::Pose, std::map<std::string, std::vector<geometry_msgs::Pose>>> getBinParts();
+    void computeWorldTransformation(const osrf_gear::LogicalCameraImage::ConstPtr & image_msg);
 	void beltlogicalCameraCallback(const osrf_gear::LogicalCameraImage::ConstPtr &);
 	void binlogicalCameraCallback(const osrf_gear::LogicalCameraImage::ConstPtr &);
+
 	void breakBeamCallback(const osrf_gear::Proximity::ConstPtr &);
 	bool isObjectDetected();
 

@@ -15,7 +15,7 @@
 #include "competition.h"
 
 Competition::Competition()
-: current_score_(0), arm_1_has_been_zeroed_(false), arm_2_has_been_zeroed_(false), sensor_(& order_manager_){
+: current_score_(0), arm_1_has_been_zeroed_(false), arm_2_has_been_zeroed_(false){
 
 //	manager_(&comp_nh_);
 

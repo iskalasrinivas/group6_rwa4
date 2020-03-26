@@ -30,7 +30,7 @@ class Competition {
 private:
 
 	ros::NodeHandle comp_nh_;
-	AriacOrderManager order_manager_;
+	//AriacOrderManager order_manager_;
 	AriacSensorManager sensor_;
 
 

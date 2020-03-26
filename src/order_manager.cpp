@@ -245,28 +245,50 @@ ros::NodeHandle* AriacOrderManager::getnode() {
 //
 //}
 
-void AriacOrderManager::remove_part() {
+void AriacOrderManager::remove_conveyor_part(std::string picked_part_id) {
 
-    // remove element of the grabbed part from the conveyor_order_parts
-    conveyor_order_parts.erase(conveyor_order_parts.begin());
+	if(conveyor_order_parts[picked_part_id].count != 0){
+		if(conveyor_order_parts[picked_part_id].size() != 0){
+			conveyor_order_parts[picked_part_id].pop_back();
+			}
+		else{
+			conveyor_order_parts.erase(picked_part_id);
+		}
+	}
+}
+
+void AriacOrderManager::remove_bin_part(std::string picked_part_id) {
+
+	if(bin_order_parts[picked_part_id].count != 0){
+		if(bin_order_parts[picked_part_id].size() != 0){
+			bin_order_parts[picked_part_id].pop_back();
+			}
+		else{
+			bin_order_parts.erase(picked_part_id);
+		}
+	}
 }
 
 void AriacOrderManager::drop_part_to_agv(const geometry_msgs::Pose initial_pose, geometry_msgs::Pose final_pose){
 
-	// GoToPose(final_pose);
-	// GripperToggle(false);
+	std::vector<geometry_msgs::Pose> waypoints;
+	geometry_msgs::Pose dt_pose;
 
-	if (gripper_state_){//--while the part is still attached to the gripper
-		//--move the robot to the end of the rail
-		ROS_INFO_STREAM("Moving towards AGV1...");
-		robot_move_group_.setJointValueTarget(final_pose);
-		this->Execute();
-		ros::Duration(1.0).sleep();
-		ROS_INFO_STREAM("Actuating the gripper...");
-		this->GripperToggle(false);
+	dt_pose.position.x = (final_pose.position.x - initial_pose.position.x) / 10;
+	dt_pose.position.y = (final_pose.position.y - initial_pose.position.y) / 10;
+	dt_pose.position.z = (final_pose.position.z - initial_pose.position.z) / 10;
+	dt_pose.orientation.x = 0;
+	dt_pose.orientation.y = 0;
+	dt_pose.orientation.z = 0;
+	dt_pose.orientation.w = 0;
+
+	for(int i = 1; i <= 10; i++){
+		geometry_msgs::Pose current_pose = initial_pose + i * dt_pose;
+		waypoints.push_back(current_pose);	
 	}
-
+	GoToTarget(waypoints);
 }
+
 
 void AriacOrderManager::pathplanning(const geometry_msgs::TransformStamped& msg) {
 	segrgateorders(); // @TODO Srinivas segregate parts from order into two vectors  bin_order_parts and conveyor_order_parts
@@ -276,7 +298,7 @@ void AriacOrderManager::pathplanning(const geometry_msgs::TransformStamped& msg)
 
 		pick_part_from_conveyor(msg);   //@TODO pick part form the conveyer belt Line 209-245 @ Preyash
 		std::string picked_part_id = identify_part(); // @TODO @ Sanket
-		remove_part(picked_part_id);  // @TODO Dinesh
+		remove_conveyor_part(picked_part_id);  // @TODO Dinesh
 		drop_part_to_agv(); // @TODO Dinesh
 		move_to_home_position(); // @TODO Saurav
 
@@ -287,7 +309,7 @@ void AriacOrderManager::pathplanning(const geometry_msgs::TransformStamped& msg)
 
 			pick_part_from_bin(msg);   //@TODO pick part form the conveyer belt Line 209-245 @ Preyash
 			std::string picked_part_id = identify_part(); // @TODO @ Sanket
-			remove_part(picked_part_id);  // @TODO Dinesh
+			remove_bin_part(picked_part_id);  // @TODO Dinesh
 			drop_part_to_agv(); // @TODO Dinesh
 			move_to_home_position();// @TODO Saurav
 

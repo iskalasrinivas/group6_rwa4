@@ -271,21 +271,21 @@ void AriacOrderManager::remove_bin_part(std::string picked_part_id) {
 
 
 void AriacOrderManager::drop_part_to_agv(){
-	geometry_msgs::Pose quality_control_camera_pose
-	geometry_msgs::Pose agv_pose
+	geometry_msgs::Pose quality_control_camera_pose;
+	geometry_msgs::Pose agv_pose;
 	// & ariac order part (end pose) 
 
-	geometry_msgs::Pose faulty_pose
-    move_to_target(quality_control_camera_pose)
+	geometry_msgs::Pose faulty_pose;
+    move_to_target(quality_control_camera_pose);
 
-    bool faulty_parts = false
+    bool faulty_parts = false;
     if(faulty_parts = true){
-    	move_to_target(faulty_bin)
-    	GripperToggle = false
+    	move_to_target(faulty_bin);
+    	GripperToggle = false;
     }
     else{
-    	move_to_target(agv_pose)
-    	GripperToggle = true
+    	move_to_target(agv_pose);
+    	GripperToggle = true;
     }
 }
 

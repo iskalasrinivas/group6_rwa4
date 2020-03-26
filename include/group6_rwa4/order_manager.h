@@ -54,7 +54,8 @@ public:
 	void setProductType();
 	void SubmitAGV(int);
 	ros::NodeHandle* getnode();
-	void remove_part();
+	void remove_conveyor_part();
+	void remove_bin_part();
 	void drop_part_to_agv(const geometry_msgs::Pose initial_pose, geometry_msgs::Pose final_pose);
 
 	void pathplanning(const geometry_msgs::TransformStamped&);

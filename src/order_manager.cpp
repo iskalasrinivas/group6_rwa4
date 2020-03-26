@@ -269,21 +269,40 @@ void AriacOrderManager::remove_bin_part(std::string picked_part_id) {
 	}
 }
 
-void AriacOrderManager::drop_part_to_agv(const geometry_msgs::Pose initial_pose, geometry_msgs::Pose final_pose){
 
+void AriacOrderManager::drop_part_to_agv(){
+	geometry_msgs::Pose quality_control_camera_pose
+	geometry_msgs::Pose agv_pose
+	// & ariac order part (end pose) 
+
+	geometry_msgs::Pose faulty_pose
+    move_to_target(quality_control_camera_pose)
+
+    bool faulty_parts = false
+    if(faulty_parts = true){
+    	move_to_target(faulty_bin)
+    	GripperToggle = false
+    }
+    else{
+    	move_to_target(agv_pose)
+    	GripperToggle = true
+    }
+}
+
+void AriacOrderManager::move_to_target(geometry_msgs::Pose final_pose){
 	std::vector<geometry_msgs::Pose> waypoints;
 	geometry_msgs::Pose dt_pose;
 
-	dt_pose.position.x = (final_pose.position.x - initial_pose.position.x) / 10;
-	dt_pose.position.y = (final_pose.position.y - initial_pose.position.y) / 10;
-	dt_pose.position.z = (final_pose.position.z - initial_pose.position.z) / 10;
+	dt_pose.position.x = (final_pose.position.x - arm1_.getHomeCartPose().position.x) / 10;
+	dt_pose.position.y = (final_pose.position.y - arm1_.getHomeCartPose().position.y) / 10;
+	dt_pose.position.z = (final_pose.position.z - arm1_.getHomeCartPose().position.z) / 10;
 	dt_pose.orientation.x = 0;
 	dt_pose.orientation.y = 0;
 	dt_pose.orientation.z = 0;
 	dt_pose.orientation.w = 0;
 
 	for(int i = 1; i <= 10; i++){
-		geometry_msgs::Pose current_pose = initial_pose + i * dt_pose;
+		geometry_msgs::Pose current_pose = arm1_.getHomeCartPose() + i * dt_pose;
 		waypoints.push_back(current_pose);	
 	}
 	GoToTarget(waypoints);

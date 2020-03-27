@@ -18,6 +18,7 @@ void AriacOrderPart::set_part_type(std::string part_type){
 
 void AriacOrderPart::set_end_pose(geometry_msgs::Pose part_pose){
     end_pose_ = part_pose;
+    end_pose_.position.z +=0.3;
 };
 
 void AriacOrderPart::set_current_pose(geometry_msgs::Pose pose) {

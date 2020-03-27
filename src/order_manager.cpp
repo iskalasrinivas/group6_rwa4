@@ -5,6 +5,7 @@
 
 #include <osrf_gear/AGVControl.h>
 #include <string>
+#include <initializer_list>
 #include <ros/ros.h>
 #include <std_srvs/Trigger.h>
 #include <boost/optional.hpp>
@@ -12,7 +13,8 @@
 
 
 //AriacOrderManager::AriacOrderManager(): arm1_{"arm1"}, arm2_{"arm2"}
-AriacOrderManager::AriacOrderManager(std::map<geometry_msgs::Pose, std::map<std::string, std::vector<geometry_msgs::Pose>>>* abp):  arm1_{"arm1"}, all_bin_parts(abp){
+AriacOrderManager::AriacOrderManager (std::map<geometry_msgs::Pose, std::map<std::string, std::vector<geometry_msgs::Pose>>>* abp):  arm1_{"arm1"}, all_bin_parts(abp),
+isBinCameraCalled(false){
 	//	order_manager_nh_= nh;
 	//	wayPoint_subscriber = order_manager_nh_.subscribe(
 	//			"/ariac/logical_sensor_4/tracking_object", 10, &AriacOrderManager::pathplanningCallback, this);
@@ -30,7 +32,16 @@ void AriacOrderManager::OrderCallback(const osrf_gear::Order::ConstPtr& order_ms
 	received_orders_.push_back(*order_msg);
 	ROS_INFO_STREAM("no of orders "<< received_orders_.size() << std::endl);
 	setOrderParts();
+	while(!isBinCameraCalled){
+        ROS_INFO_STREAM("bin camera is not called" << std::endl);
+    }
+    segregateOrders();
 }
+
+void AriacOrderManager::setBinCameraCalled(){
+    isBinCameraCalled = true;
+}
+
 
 void AriacOrderManager::setOrderParts(){
 	ROS_INFO_STREAM("reading order." << std::endl);
@@ -294,6 +305,61 @@ void AriacOrderManager::segregateOrders(){
 
 }
 
+void AriacOrderManager::remove_conveyor_part(AriacOrderPart* orderPart) {
+    auto part_type = orderPart->get_part_type();
+	if(conveyor_order_parts.size() != 0){
+		if(conveyor_order_parts[part_type].size() != 0) {
+            if (conveyor_order_parts[part_type].size() == 0) {
+                conveyor_order_parts.erase(part_type);
+            }
+        }
+	}
+}
+
+void AriacOrderManager::remove_bin_part(AriacOrderPart* orderPart) {
+    auto part_type = orderPart->get_part_type();
+    if (bin_order_parts.size() != 0) {
+        if (bin_order_parts[part_type].size() != 0) {
+            bin_order_parts[part_type].pop_back();
+            if (bin_order_parts[part_type].size() == 0) {
+                bin_order_parts.erase(part_type);
+            }
+        }
+    }
+}
+
+void AriacOrderManager::drop_part_to_agv(){
+    if(part_is_faulty){
+        move_to_target(faulty_bin_pose);
+        GripperToggle = false;
+    }
+    else{
+        move_to_target(agv_pose);
+        GripperToggle = true;
+    }
+
+
+}
+
+void AriacOrderManager::move_to_target(geometry_msgs::Pose final_pose){
+	std::vector<geometry_msgs::Pose> waypoints;
+	geometry_msgs::Pose dt_pose;
+
+	dt_pose.position.x = (final_pose.position.x - arm1_.getHomeCartPose().position.x) / 10;
+	dt_pose.position.y = (final_pose.position.y - arm1_.getHomeCartPose().position.y) / 10;
+	dt_pose.position.z = (final_pose.position.z - arm1_.getHomeCartPose().position.z) / 10;
+	dt_pose.orientation.x = 0;
+	dt_pose.orientation.y = 0;
+	dt_pose.orientation.z = 0;
+	dt_pose.orientation.w = 0;
+
+	for(int i = 1; i <= 10; i++){
+		geometry_msgs::Pose current_pose = arm1_.getHomeCartPose() + i * dt_pose;
+		waypoints.emplace_back(current_pose);
+	}
+	arm1_.GoToTarget(waypoints);
+}
+
 void AriacOrderManager::pathplanning(const geometry_msgs::TransformStamped& msg) {
 	segregateorders(); // @TODO Srinivas segregate parts from order into two vectors  bin_order_parts and conveyor_order_parts
 
@@ -302,7 +368,7 @@ void AriacOrderManager::pathplanning(const geometry_msgs::TransformStamped& msg)
 
 		pick_part_from_conveyor(msg);   //@TODO pick part form the conveyer belt Line 209-245 @ Preyash
 		std::string picked_part_id = identify_part(); // @TODO @ Sanket
-		remove_part(picked_part_id);  // @TODO Dinesh
+		remove_conveyor_part(picked_part_id);  // @TODO Dinesh
 		drop_part_to_agv(); // @TODO Dinesh
 		move_to_home_position(); // @TODO Saurav
 
@@ -313,7 +379,7 @@ void AriacOrderManager::pathplanning(const geometry_msgs::TransformStamped& msg)
 
 			pick_part_from_bin(msg);   //@TODO pick part form the conveyer belt Line 209-245 @ Preyash
 			std::string picked_part_id = identify_part(); // @TODO @ Sanket
-			remove_part(picked_part_id);  // @TODO Dinesh
+			remove_bin_part(picked_part_id);  // @TODO Dinesh
 			drop_part_to_agv(); // @TODO Dinesh
 			move_to_home_position();// @TODO Saurav
 

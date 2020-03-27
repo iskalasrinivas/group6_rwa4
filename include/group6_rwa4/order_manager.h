@@ -41,6 +41,12 @@ private:
     std::map<std::string, std::vector<AriacOrderPart>> all_orderParts;
     std::map<std::string, std::vector<AriacOrderPart>> conveyor_order_parts;
     std::map<std::string, std::vector<AriacOrderPart>> bin_order_parts;
+    bool isBinCameraCalled;
+    bool part_is_faulty;
+    geometry_msgs::Pose quality_control_camera_pose;
+    geometry_msgs::Pose faulty_bin_pose;
+    geometry_msgs::Pose agv_pose;
+
 
 //	RobotController sensors_;
 
@@ -57,8 +63,14 @@ public:
     void setCurrentPose(std::vector<AriacOrderPart> &ariacOrderparts,
                                            const std::vector<geometry_msgs::Pose> &vecPose);
 	void segregateOrders();
+    void remove_conveyor_part(AriacOrderPart* orderPart);
+    void remove_bin_part(AriacOrderPart* orderPart);
+    void drop_part_to_agv();
+    void move_to_target(geometry_msgs::Pose final_pose);
 	void SubmitAGV(int);
 	ros::NodeHandle* getnode();
+	void setBinCameraCalled();
+
 
 	void pathplanning(const geometry_msgs::TransformStamped&);
 };

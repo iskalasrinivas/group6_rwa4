@@ -35,6 +35,7 @@ private:
 	ros::Subscriber camera_4_subscriber_;
 	ros::Subscriber camera_5_subscriber_;
 	ros::Subscriber breakbeam_subscriber;
+    ros::Subscriber quality_control_camera_subscriber_;
 
 	geometry_msgs::TransformStamped transformStamped1;
 	geometry_msgs::TransformStamped transformStamped2;

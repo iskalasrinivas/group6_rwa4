@@ -12,6 +12,7 @@ AriacSensorManager::AriacSensorManager() : order_manager_(& all_binParts) {
 	                                                  &AriacSensorManager::beltlogicalCameraCallback, this);
     camera_5_subscriber_ = sensor_nh_.subscribe("/ariac/logical_camera_5", 10 ,
                                                 &AriacSensorManager::binlogicalCameraCallback, this);
+    quality_control_camera_subscriber_ = sensor_nh_.subscribe("/ariac/quality_control_sensor_1", 10 , &AriacSensorManager::qualityControlSensor1Callback, this);
 }
 
 AriacSensorManager::~AriacSensorManager() {}
@@ -92,53 +93,91 @@ void AriacSensorManager::computeWorldTransformation(const osrf_gear::LogicalCame
 
 void AriacSensorManager::beltlogicalCameraCallback(const osrf_gear::LogicalCameraImage::ConstPtr & image_msg) {
 	// order type same as camera type
-	    computeWorldTransformation(image_msg);
+	    // computeWorldTransformation(image_msg);
 		//order_manager_.pathplanning(transformStamped3);
+        if(!order_manager_.get_conveyor_order_part().empty()){
+            // convert image_msg to world frame
+
+            //call pick part to pick that part
+
+            // if attached take it to quality camera
+
+            //if attached and if no faulty part  deliver it to agv end pose
+
+
+            //if faulty deliver it to trash bin
+        } else {
+            //set bool :all order part of conveyor belt picked
+        }
+
 
 	}
 
 void AriacSensorManager::binlogicalCameraCallback(const osrf_gear::LogicalCameraImage::ConstPtr & image_msg){
-    auto sensor_pose = image_msg->pose;
-    auto current_time = ros::Time::now();
-    tf2_ros::TransformListener tfListener(tfBuffer);
+// all bin part is empty fill the all bin part for segregate purpose
 
 
-    transformStamped1.header.stamp = current_time;
-    transformStamped1.header.frame_id = "world";
-    transformStamped1.child_frame_id = "logical_sensor";
+// if all order part of conveyor belt picked then
+if (all order part of conveyor belt picked) {
+    // convert image_msg to world frame
 
-    transformStamped2.header.stamp = current_time;
-    transformStamped2.header.frame_id = "logical_sensor";
-    transformStamped2.child_frame_id = "logical_sensor_child";
+    //call pick part to pick that part
 
-    setPose(sensor_pose,transformStamped1);
-    br_w_s.sendTransform(transformStamped1);
-    ros::Duration(0.001).sleep();
-    all_binParts[sensor_pose].clear();
-    for(auto it =image_msg->models.begin(); it!=image_msg->models.end();++it) {
-        setPose( it->pose, transformStamped2);
-        br_s_c.sendTransform(transformStamped2);
-        ros::Duration(0.001).sleep();
-        auto partType = it->type;
-        try{
-            transformStamped3 = tfBuffer.lookupTransform("world", "logical_sensor_child",
-                                                         ros::Time(0));
-            geometry_msgs::Pose pose;
-            setPose(transformStamped3, pose);
-            all_binParts[sensor_pose][partType].push_back(pose);
+    // if attached take it to quality camera
 
-        }
-        catch (tf2::TransformException &ex) {
-            ROS_WARN("exception");
-            ROS_WARN("%s",ex.what());
-            ros::Duration(0.001).sleep();
-        }
+    //if attached and if no faulty part  deliver it to agv end pose
 
 
-    }
-
-
+    //if faulty deliver it to trash bin
 }
+// if all order part of bin belt picked then send agv and end competition
+
+order_manager_.setBinCameraCalled();
+}
+
+
+// void AriacSensorManager::binlogicalCameraCallback(const osrf_gear::LogicalCameraImage::ConstPtr & image_msg){
+//     auto sensor_pose = image_msg->pose;
+//     auto current_time = ros::Time::now();
+//     tf2_ros::TransformListener tfListener(tfBuffer);
+
+
+//     transformStamped1.header.stamp = current_time;
+//     transformStamped1.header.frame_id = "world";
+//     transformStamped1.child_frame_id = "logical_sensor";
+
+//     transformStamped2.header.stamp = current_time;
+//     transformStamped2.header.frame_id = "logical_sensor";
+//     transformStamped2.child_frame_id = "logical_sensor_child";
+
+//     setPose(sensor_pose,transformStamped1);
+//     br_w_s.sendTransform(transformStamped1);
+//     ros::Duration(0.001).sleep();
+//     all_binParts[sensor_pose].clear();
+//     for(auto it =image_msg->models.begin(); it!=image_msg->models.end();++it) {
+//         setPose( it->pose, transformStamped2);
+//         br_s_c.sendTransform(transformStamped2);
+//         ros::Duration(0.001).sleep();
+//         auto partType = it->type;
+//         try{
+//             transformStamped3 = tfBuffer.lookupTransform("world", "logical_sensor_child",
+//                                                          ros::Time(0));
+//             geometry_msgs::Pose pose;
+//             setPose(transformStamped3, pose);
+//             all_binParts[sensor_pose][partType].push_back(pose);
+
+//         }
+//         catch (tf2::TransformException &ex) {
+//             ROS_WARN("exception");
+//             ROS_WARN("%s",ex.what());
+//             ros::Duration(0.001).sleep();
+//         }
+
+
+//     }
+//     order_manager_.setBinCameraCalled();
+
+// }
 
 
 bool AriacSensorManager::isObjectDetected() {

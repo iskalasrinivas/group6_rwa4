@@ -60,6 +60,7 @@ public:
 	~RobotController();
 	bool Planner();
 	void Execute();
+    void GoToTarget(std::vector<geometry_msgs::Pose> waypoints);
 	void GoToTarget(std::initializer_list<geometry_msgs::Pose>);
 	void GoToTarget(const geometry_msgs::Pose& );
 	void SendRobotHome();

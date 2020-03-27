@@ -151,6 +151,36 @@ void RobotController::GoToTarget(const geometry_msgs::Pose& pose) {
 //}
 
 void RobotController::GoToTarget(
+        std::vector<geometry_msgs::Pose> waypoints) {
+    ros::AsyncSpinner spinner(4);
+    spinner.start();
+
+    for (auto i : waypoints) {
+        i.orientation.x = fixed_orientation_.x;
+        i.orientation.y = fixed_orientation_.y;
+        i.orientation.z = fixed_orientation_.z;
+        i.orientation.w = fixed_orientation_.w;
+    }
+
+    moveit_msgs::RobotTrajectory traj;
+    auto fraction =
+            robot_move_group_.computeCartesianPath(waypoints, 0.01, 0.0, traj, true);
+
+    ROS_WARN_STREAM("Fraction: " << fraction * 100);
+    ros::Duration(0.5).sleep();
+
+    robot_planner_.trajectory_ = traj;
+
+    //if (fraction >= 0.3) {
+    robot_move_group_.execute(robot_planner_);
+    ros::Duration(0.5).sleep();
+    //    } else {
+    //        ROS_ERROR_STREAM("Safe Trajectory not found!");
+    //    }
+}
+
+
+void RobotController::GoToTarget(
 		std::initializer_list<geometry_msgs::Pose> list) {
 	ros::AsyncSpinner spinner(4);
 	spinner.start();

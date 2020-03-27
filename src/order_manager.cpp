@@ -151,11 +151,10 @@ void AriacOrderManager::pick_part(const geometry_msgs::TransformStamped& msg, in
         world_part_pose.orientation.w = msg.transform.rotation.w;
 
 
-        pickPart(world_part_pose);
+        pickPart(world_part_pose); 
 	}
 
 }
-
 
 
 

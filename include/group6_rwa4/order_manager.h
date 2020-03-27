@@ -57,6 +57,7 @@ public:
 	void ExecuteOrder();
 	boost::optional<std::string> GetProductFrame(std::string);
     void pick_part(const geometry_msgs::TransformStamped& msg, int y);
+	void pickPart(geometry_msgs::Pose world_part_pose)
 	std::map<std::string, std::list<std::pair<std::string,geometry_msgs::Pose>>> GetOrder();
 	std::vector<std::string> getProductType();
 	void setOrderParts();

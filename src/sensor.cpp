@@ -115,13 +115,18 @@ void AriacSensorManager::beltlogicalCameraCallback(const osrf_gear::LogicalCamer
 
 void AriacSensorManager::binlogicalCameraCallback(const osrf_gear::LogicalCameraImage::ConstPtr & image_msg){
 // all bin part is empty fill the all bin part for segregate purpose
-
-
+    setallbinparts(image_msg);
 // if all order part of conveyor belt picked then
-if (all order part of conveyor belt picked) {
-    // convert image_msg to world frame
+if (conveyor_parts_picked) {
 
+	auto bin_order = order_manager_.getBinOrderParts();
+	for(auto map_it = bin_order.begin(); map_it != bin_order.end(); map_it++){
+		for(auto it = map_it->second.begin(); it != map_it->second.end(); it++){
+			it->get_current_pose()
+		}
+	}
     //call pick part to pick that part
+    order_manager_.pick_part( 0)
 
     // if attached take it to quality camera
 
@@ -132,52 +137,52 @@ if (all order part of conveyor belt picked) {
 }
 // if all order part of bin belt picked then send agv and end competition
 
-order_manager_.setBinCameraCalled();
+
 }
 
 
-// void AriacSensorManager::binlogicalCameraCallback(const osrf_gear::LogicalCameraImage::ConstPtr & image_msg){
-//     auto sensor_pose = image_msg->pose;
-//     auto current_time = ros::Time::now();
-//     tf2_ros::TransformListener tfListener(tfBuffer);
+void AriacSensorManager::setallbinparts(const osrf_gear::LogicalCameraImage::ConstPtr & image_msg){
+    auto sensor_pose = image_msg->pose;
+    auto current_time = ros::Time::now();
+    tf2_ros::TransformListener tfListener(tfBuffer);
 
 
-//     transformStamped1.header.stamp = current_time;
-//     transformStamped1.header.frame_id = "world";
-//     transformStamped1.child_frame_id = "logical_sensor";
+    transformStamped1.header.stamp = current_time;
+    transformStamped1.header.frame_id = "world";
+    transformStamped1.child_frame_id = "logical_sensor";
 
-//     transformStamped2.header.stamp = current_time;
-//     transformStamped2.header.frame_id = "logical_sensor";
-//     transformStamped2.child_frame_id = "logical_sensor_child";
+    transformStamped2.header.stamp = current_time;
+    transformStamped2.header.frame_id = "logical_sensor";
+    transformStamped2.child_frame_id = "logical_sensor_child";
 
-//     setPose(sensor_pose,transformStamped1);
-//     br_w_s.sendTransform(transformStamped1);
-//     ros::Duration(0.001).sleep();
-//     all_binParts[sensor_pose].clear();
-//     for(auto it =image_msg->models.begin(); it!=image_msg->models.end();++it) {
-//         setPose( it->pose, transformStamped2);
-//         br_s_c.sendTransform(transformStamped2);
-//         ros::Duration(0.001).sleep();
-//         auto partType = it->type;
-//         try{
-//             transformStamped3 = tfBuffer.lookupTransform("world", "logical_sensor_child",
-//                                                          ros::Time(0));
-//             geometry_msgs::Pose pose;
-//             setPose(transformStamped3, pose);
-//             all_binParts[sensor_pose][partType].push_back(pose);
+    setPose(sensor_pose,transformStamped1);
+    br_w_s.sendTransform(transformStamped1);
+    ros::Duration(0.001).sleep();
+    all_binParts[sensor_pose].clear();
+    for(auto it =image_msg->models.begin(); it!=image_msg->models.end();++it) {
+        setPose( it->pose, transformStamped2);
+        br_s_c.sendTransform(transformStamped2);
+        ros::Duration(0.001).sleep();
+        auto partType = it->type;
+        try{
+            transformStamped3 = tfBuffer.lookupTransform("world", "logical_sensor_child",
+                                                         ros::Time(0));
+            geometry_msgs::Pose pose;
+            setPose(transformStamped3, pose);
+            all_binParts[sensor_pose][partType].push_back(pose);
 
-//         }
-//         catch (tf2::TransformException &ex) {
-//             ROS_WARN("exception");
-//             ROS_WARN("%s",ex.what());
-//             ros::Duration(0.001).sleep();
-//         }
+        }
+        catch (tf2::TransformException &ex) {
+            ROS_WARN("exception");
+            ROS_WARN("%s",ex.what());
+            ros::Duration(0.001).sleep();
+        }
 
 
-//     }
-//     order_manager_.setBinCameraCalled();
+    }
+    order_manager_.setBinCameraCalled();
 
-// }
+}
 
 
 bool AriacSensorManager::isObjectDetected() {

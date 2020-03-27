@@ -103,106 +103,6 @@ boost::optional<std::string> AriacOrderManager::GetProductFrame(std::string prod
 
 }
 
-
-
-
-//bool AriacOrderManager::PickAndPlace(const std::pair<std::string,geometry_msgs::Pose> product_type_pose, int agv_id) {
-//    std::string product_type = product_type_pose.first;
-//    ROS_WARN_STREAM("Product type >>>> " << product_type);
-//    std::string product_frame = this->GetProductFrame(product_type);
-//    ROS_WARN_STREAM("Product frame >>>> " << product_frame);
-//    auto part_pose = camera_.GetPartPose("/world",product_frame);
-//
-//
-//    if(product_type == "pulley_part")
-//        part_pose.position.z += 0.08;
-//    //--task the robot to pick up this part
-//    bool failed_pick = arm1_.PickPart(part_pose);
-//    ROS_WARN_STREAM("Picking up state " << failed_pick);
-//    ros::Duration(0.5).sleep();
-//
-//    while(!failed_pick){
-//        auto part_pose = camera_.GetPartPose("/world",product_frame);
-//        failed_pick = arm1_.PickPart(part_pose);
-//    }
-//
-//    //--get the pose of the object in the tray from the order
-//    geometry_msgs::Pose drop_pose = product_type_pose.second;
-//
-//    geometry_msgs::PoseStamped StampedPose_in,StampedPose_out;
-//
-//    if(agv_id==1){
-//        StampedPose_in.header.frame_id = "/kit_tray_1";
-//        StampedPose_in.pose = drop_pose;
-//        ROS_INFO_STREAM("StampedPose_int (" << StampedPose_in.pose.position.x <<","<< StampedPose_in.pose.position.y << "," << StampedPose_in.pose.position.z<<")");
-//        part_tf_listener_.transformPose("/world",StampedPose_in,StampedPose_out);
-//        StampedPose_out.pose.position.z += 0.1;
-//        StampedPose_out.pose.position.y -= 0.2;
-//        ROS_INFO_STREAM("StampedPose_out (" << StampedPose_out.pose.position.x <<","<< StampedPose_out.pose.position.y << "," << StampedPose_out.pose.position.z<<")");
-//
-//    }
-//    else{
-//        StampedPose_in.header.frame_id = "/kit_tray_2";
-//        StampedPose_in.pose = drop_pose;
-//        //ROS_INFO_STREAM("StampedPose_in " << StampedPose_in.pose.position.x);
-//        part_tf_listener_.transformPose("/world",StampedPose_in,StampedPose_out);
-//        StampedPose_out.pose.position.z += 0.1;
-//        StampedPose_out.pose.position.y += 0.2;
-//        //ROS_INFO_STREAM("StampedPose_out " << StampedPose_out.pose.position.x);
-//    }
-//    auto result = arm1_.DropPart(StampedPose_out.pose);
-//
-//    return result;
-//}
-
-
-//void AriacOrderManager::ExecuteOrder() {
-//    ROS_WARN(">>>>>> Executing order...");
-//    //scanned_objects_ = camera_.GetParts();
-//
-//    //-- used to check if pick and place was successful
-//    bool pick_n_place_success{false};
-//
-//    std::list<std::pair<std::string,geometry_msgs::Pose>> failed_parts;
-//
-//    ros::spinOnce();
-//    ros::Duration(1.0).sleep();
-//    product_frame_list_ = camera_.get_product_frame_list();
-//    for (const auto &order:received_orders_){
-//        auto order_id = order.order_id;
-//        auto shipments = order.shipments;
-//        for (const auto &shipment: shipments){
-//            auto shipment_type = shipment.shipment_type;
-//            auto agv = shipment.agv_id.back();//--this returns a char
-//            //-- if agv is any then we use AGV1, else we convert agv id to int
-//            //--agv-'0' converts '1' to 1 and '2' to 2
-//            int agv_id = (shipment.agv_id == "any") ? 1 : agv - '0';
-//
-//            auto products = shipment.products;
-//            ROS_INFO_STREAM("Order ID: " << order_id);
-//            ROS_INFO_STREAM("Shipment Type: " << shipment_type);
-//            ROS_INFO_STREAM("AGV ID: " << agv_id);
-//            for (const auto &product: products){
-//                ros::spinOnce();
-//                product_type_pose_.first = product.type;
-//                product_type.push_back(product.type);
-//                //ROS_INFO_STREAM("Product type: " << product_type_pose_.first);
-//                product_type_pose_.second = product.pose;
-//                ROS_INFO_STREAM("Product pose: " << product_type_pose_.second.position.x);
-//                pick_n_place_success =  PickAndPlace(product_type_pose_, agv_id);
-//                //--todo: What do we do if pick and place fails?
-//            }
-//            SubmitAGV(1);
-//            ROS_INFO_STREAM("Submitting AGV 1");
-//            int finish=1;
-//        }
-//
-//
-//    }
-//}
-
-
-
 void AriacOrderManager::SubmitAGV(int num) {
 	std::string s = std::to_string(num);
 	ros::ServiceClient start_client =
@@ -229,48 +129,57 @@ ros::NodeHandle* AriacOrderManager::getnode() {
 }
 //
 
-//void AriacOrderManager::pick_part(const geometry_msgs::TransformStamped& msg) {
-//	if(task_pending) {
-//		ROS_INFO("robot_controller_pathPlanning");
-//		double threshold_z = 0.1;
-//		double threshold_y = 0.35;
-//		geometry_msgs::Pose arm_base_part_pose;
-//		arm_base_part_pose.position.x= msg.transform.translation.x;
-//		arm_base_part_pose.position.y= msg.transform.translation.y-0.2;
-//		arm_base_part_pose.position.z= msg.transform.translation.z;
-//		arm_base_part_pose.orientation.x= msg.transform.rotation.x;
-//		arm_base_part_pose.orientation.y= msg.transform.rotation.y;
-//		arm_base_part_pose.orientation.z= msg.transform.rotation.z;
-//		arm_base_part_pose.orientation.w = msg.transform.rotation.w;
-//		//	if(count ==0) {
-//		//	ROS_INFO_STREAM("isPartAttached status" << arm1_.isPartAttached());
-//		if(!arm1_.isPartAttached()) {
-//			//		ROS_INFO("part not attached");
-//			//		ROS_INFO_STREAM(msg.transform.translation.x<<","<< msg.transform.translation.y<<","<< msg.transform.translation.z);
-//			arm1_.GoToTarget(arm_base_part_pose);
-//			//		ROS_INFO("going toward part");
-//			ROS_INFO_STREAM("gap: "<<arm1_.getHomeCartPose().position.z- msg.transform.translation.z << ","<< arm1_.getHomeCartPose().position.y- msg.transform.translation.y);
-//			if(arm1_.getHomeCartPose().position.z- msg.transform.translation.z < threshold_z &&
-//					arm1_.getHomeCartPose().position.y- msg.transform.translation.y < threshold_y) {
-//				//			arm1_.GoToTarget(arm_base_part_pose);
-//				// arm1_.PickPart(arm_base_part_pose);
-//				arm1_.GripperToggle(true);
-//				arm_base_part_pose.position.z += 0.2;
-//				arm_base_part_pose.position.y += 0.5;
-//				arm1_.GoToTarget(arm_base_part_pose);
-//			}
-//		} else {
-//			arm1_.GoToEnd();
-//			task_pending = false;
-//		}
-//	}
-//
-//}
+bool AriacOrderManager::in_vicinity(const geometry_msgs::TransformStamped& msg){
+	double threshold_z = 0.1;
+	double threshold_y = 0.35;
+	return (arm1_.getHomeCartPose().position.z- msg.transform.translation.z < threshold_z &&
+						arm1_.getHomeCartPose().position.y- msg.transform.translation.y < threshold_y);
+}
 
-std::map<geometry_msgs::Pose, std::map<std::string, std::vector<geometry_msgs::Pose>>>* all_bin_parts;
-std::map<std::string, std::vector<AriacOrderPart>> all_orderParts;
-std::map<std::string, std::vector<AriacOrderPart>> conveyor_order_parts;
-std::map<std::string, std::vector<AriacOrderPart>> bin_order_parts;
+void AriacOrderManager::pick_part(const geometry_msgs::TransformStamped& msg, int y) {
+	if(task_pending) {
+		ROS_INFO("robot_controller_pathPlanning");
+		double threshold_z = 0.1;
+		double threshold_y = 0.35;
+		geometry_msgs::Pose world_part_pose;
+        world_part_pose.position.x= msg.transform.translation.x;
+        world_part_pose.position.y= msg.transform.translation.y - y;
+        world_part_pose.position.z= msg.transform.translation.z;
+        world_part_pose.orientation.x= msg.transform.rotation.x;
+        world_part_pose.orientation.y= msg.transform.rotation.y;
+        world_part_pose.orientation.z= msg.transform.rotation.z;
+        world_part_pose.orientation.w = msg.transform.rotation.w;
+
+
+        pickPart(world_part_pose);
+	}
+
+}
+
+
+
+
+void AriacOrderManager::pickPart(geometry_msgs::Pose world_part_pose){
+    if(!arm1_.isPartAttached()) {
+        //		ROS_INFO("part not attached");
+        //		ROS_INFO_STREAM(msg.transform.translation.x<<","<< msg.transform.translation.y<<","<< msg.transform.translation.z);
+        arm1_.GoToTarget(world_part_pose);
+        //		ROS_INFO("going toward part");
+        ROS_INFO_STREAM("gap: "<<arm1_.getHomeCartPose().position.z- msg.transform.translation.z << ","<< arm1_.getHomeCartPose().position.y- msg.transform.translation.y);
+        if(in_vicinity()) {
+            //			arm1_.GoToTarget(world_part_pose);
+            // arm1_.PickPart(world_part_pose);
+            arm1_.GripperToggle(true);
+            world_part_pose.position.z += 0.2;
+            world_part_pose.position.y += y;   // 0.5
+            arm1_.GoToTarget(world_part_pose);
+        }
+    } else {
+        arm1_.GoToEnd();
+        task_pending = false;
+    }
+}
+
 
 void AriacOrderManager::setCurrentPose(std::vector<AriacOrderPart> &ariacOrderparts,
                                                 const std::vector<geometry_msgs::Pose> &vecPose) {
@@ -303,6 +212,10 @@ void AriacOrderManager::segregateOrders(){
         }
     }
 
+}
+
+std::map<std::string, std::vector<AriacOrderPart>> AriacOrderManager::getBinOrderParts(){
+    return bin_order_parts;
 }
 
 void AriacOrderManager::remove_conveyor_part(AriacOrderPart* orderPart) {

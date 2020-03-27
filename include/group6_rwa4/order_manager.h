@@ -56,13 +56,14 @@ public:
 	void OrderCallback(const osrf_gear::Order::ConstPtr&);
 	void ExecuteOrder();
 	boost::optional<std::string> GetProductFrame(std::string);
+    void pick_part(const geometry_msgs::TransformStamped& msg, int y);
 	std::map<std::string, std::list<std::pair<std::string,geometry_msgs::Pose>>> GetOrder();
-	bool PickAndPlace(std::pair<std::string,geometry_msgs::Pose>,int );
 	std::vector<std::string> getProductType();
 	void setOrderParts();
     void setCurrentPose(std::vector<AriacOrderPart> &ariacOrderparts,
                                            const std::vector<geometry_msgs::Pose> &vecPose);
 	void segregateOrders();
+    std::map<std::string, std::vector<AriacOrderPart>> getBinOrderParts();
     void remove_conveyor_part(AriacOrderPart* orderPart);
     void remove_bin_part(AriacOrderPart* orderPart);
     void drop_part_to_agv();
@@ -70,6 +71,7 @@ public:
 	void SubmitAGV(int);
 	ros::NodeHandle* getnode();
 	void setBinCameraCalled();
+	bool in_vicinity(const geometry_msgs::TransformStamped&);
 
 
 	void pathplanning(const geometry_msgs::TransformStamped&);

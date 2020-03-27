@@ -22,6 +22,7 @@ public:
 	void set_current_pose(geometry_msgs::Pose);
 	const std::string get_part_type();
 	const geometry_msgs::Pose get_end_pose();
+	const geometry_msgs::Pose get_current_pose();
 
 
 };

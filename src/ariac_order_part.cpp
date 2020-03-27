@@ -36,3 +36,7 @@ const std::string AriacOrderPart::get_part_type(){
 const geometry_msgs::Pose AriacOrderPart::get_end_pose(){
     return end_pose_ ;
 };
+
+const geometry_msgs::Pose AriacOrderPart::get_current_pose(){
+    return current_pose_;
+}

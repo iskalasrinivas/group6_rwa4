@@ -47,12 +47,8 @@ private:
 	tf2_ros::TransformBroadcaster br_w_s;
 	tf2_ros::TransformBroadcaster br_s_c;
 	bool object_detected = false;
+	bool conveyor_parts_picked = false;
 
-
-	//	tf::TransformListener camera_tf_listener_;
-	//	tf::StampedTransform camera_tf_transform_;
-	//	std::map<std::string, std::vector<geometry_msgs::Pose>> part_list_;
-	//	std::map<std::string, std::vector<std::string>> product_frame_list_;
 public:
 	AriacSensorManager();
 	~AriacSensorManager();

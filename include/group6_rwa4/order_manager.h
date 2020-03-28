@@ -74,7 +74,7 @@ class AriacOrderManager {
   std::map<std::string, std::vector<std::string>> product_frame_list_;
   osrf_gear::Order order_;
 
-  std::map<geometry_msgs::Pose,
+  std::map<std::string,
    std::map<std::string, std::vector<geometry_msgs::Pose>>>* all_bin_parts;
   std::map<std::string, std::vector<AriacOrderPart>> all_orderParts;
   std::map<std::string, std::vector<AriacOrderPart>> conveyor_order_parts;
@@ -87,7 +87,7 @@ class AriacOrderManager {
   geometry_msgs::Pose agv_pose;
 
  public:
-  explicit AriacOrderManager(std::map<geometry_msgs::Pose,
+  explicit AriacOrderManager(std::map<std::string,
   std::map<std::string, std::vector<geometry_msgs::Pose>>>*);
   ~AriacOrderManager();
   void OrderCallback(const osrf_gear::Order::ConstPtr&);

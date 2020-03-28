@@ -68,7 +68,7 @@ class AriacSensorManager {
 
 
 private:
-    std::map<geometry_msgs::Pose, std::map<std::string, std::vector<geometry_msgs::Pose>>> all_binParts;
+    std::map<std::string, std::map<std::string, std::vector<geometry_msgs::Pose>>> all_binParts;
 	AriacOrderManager order_manager_ ;
 	ros::NodeHandle sensor_nh_;
 
@@ -96,11 +96,13 @@ public:
 	void setPose(const geometry_msgs::Pose pose, geometry_msgs::TransformStamped &);
 	void setPose(const geometry_msgs::Pose pose, geometry_msgs::Pose &);
     void setPose(const geometry_msgs::TransformStamped transformStamped, geometry_msgs::Pose &pose);
-    std::map<geometry_msgs::Pose, std::map<std::string, std::vector<geometry_msgs::Pose>>> getBinParts();
+    std::map<std::string, std::map<std::string, std::vector<geometry_msgs::Pose>>> getBinParts();
     void computeWorldTransformation(const osrf_gear::LogicalCameraImage::ConstPtr & image_msg);
 	void beltlogicalCameraCallback(const osrf_gear::LogicalCameraImage::ConstPtr &);
-	void binlogicalCameraCallback(const osrf_gear::LogicalCameraImage::ConstPtr &);
-	void setAllBinParts(const osrf_gear::LogicalCameraImage::ConstPtr &);
+	void binlogicalCameraCallback(const osrf_gear::LogicalCameraImage::ConstPtr &, std::string);
+	void binlogicalCameraCallback1(const osrf_gear::LogicalCameraImage::ConstPtr &);
+	void binlogicalCameraCallback2(const osrf_gear::LogicalCameraImage::ConstPtr &);
+	void setAllBinParts(const osrf_gear::LogicalCameraImage::ConstPtr &, std::string);
 	void breakBeamCallback(const osrf_gear::Proximity::ConstPtr &);
 	bool isObjectDetected();
 	void qualityControlSensor1Callback(const osrf_gear::LogicalCameraImage::ConstPtr &);

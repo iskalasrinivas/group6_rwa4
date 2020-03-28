@@ -45,11 +45,11 @@
 AriacSensorManager::AriacSensorManager() : order_manager_(& all_binParts) {
 	ROS_INFO_STREAM(">>>>> Subscribing to logical sensors");
     camera_1_subscriber_ = sensor_nh_.subscribe("/ariac/logical_camera_1", 10 ,
-                                                           &AriacSensorManager::binlogicalCameraCallback, this);
+                                                           &AriacSensorManager::binlogicalCameraCallback1, this);
 	camera_4_subscriber_ = sensor_nh_.subscribe("/ariac/logical_camera_4", 10 ,
 	                                                  &AriacSensorManager::beltlogicalCameraCallback, this);
     camera_5_subscriber_ = sensor_nh_.subscribe("/ariac/logical_camera_5", 10 ,
-                                                &AriacSensorManager::binlogicalCameraCallback, this);
+                                                &AriacSensorManager::binlogicalCameraCallback2, this);
     quality_control_camera_subscriber_ = sensor_nh_.subscribe("/ariac/quality_control_sensor_1", 10 , &AriacSensorManager::qualityControlSensor1Callback, this);
 }
 
@@ -89,7 +89,7 @@ void AriacSensorManager::setPose(const geometry_msgs::TransformStamped transform
      pose.orientation.w = transformStamped.transform.rotation.w;
 }
 
-std::map<geometry_msgs::Pose, std::map<std::string, std::vector<geometry_msgs::Pose>>> AriacSensorManager::getBinParts(){
+std::map<std::string, std::map<std::string, std::vector<geometry_msgs::Pose>>> AriacSensorManager::getBinParts(){
      return all_binParts;
 }
 
@@ -133,57 +133,65 @@ void AriacSensorManager::computeWorldTransformation(const osrf_gear::LogicalCame
 
 
 void AriacSensorManager::beltlogicalCameraCallback(const osrf_gear::LogicalCameraImage::ConstPtr & image_msg) {
-	// order type same as camera type
-	    // computeWorldTransformation(image_msg);
-		//order_manager_.pathplanning(transformStamped3);
-        if(!order_manager_.getConveyorOrderParts().empty()){
-            // convert image_msg to world frame
-
-            //call pick part to pick that part
-
-            // if attached take it to quality camera
-
-            //if attached and if no faulty part  deliver it to agv end pose
-
-
-            //if faulty deliver it to trash bin
-        } else {
-            //set bool :all order part of conveyor belt picked
-        }
-
-
+//	// order type same as camera type
+//	    // computeWorldTransformation(image_msg);
+//		//order_manager_.pathplanning(transformStamped3);
+//        if(!order_manager_.getConveyorOrderParts().empty()){
+//            // convert image_msg to world frame
+//
+//            //call pick part to pick that part
+//
+//            // if attached take it to quality camera
+//
+//            //if attached and if no faulty part  deliver it to agv end pose
+//
+//
+//            //if faulty deliver it to trash bin
+//        } else {
+//            //set bool :all order part of conveyor belt picked
+//        }
+//
+//
 	}
 
-void AriacSensorManager::binlogicalCameraCallback(const osrf_gear::LogicalCameraImage::ConstPtr & image_msg){
-// all bin part is empty fill the all bin part for segregate purpose
-    setAllBinParts(image_msg);
-// if all order part of conveyor belt picked then
-if (conveyor_parts_picked) {
+void AriacSensorManager::binlogicalCameraCallback1(const osrf_gear::LogicalCameraImage::ConstPtr & image_msg ){
 
-	auto bin_order = order_manager_.getBinOrderParts();
-	for(auto map_it = bin_order.begin(); map_it != bin_order.end(); map_it++){
-		for(auto it = map_it->second.begin(); it != map_it->second.end(); it++){
-			auto current_pose = it->getCurrentPose();
-            order_manager_.pickPart(current_pose, 0);
-		}
-	}
-    //call pick part to pick that part
-    
-
-    // if attached take it to quality camera
-
-    //if attached and if no faulty part  deliver it to agv end pose
-
-
-    //if faulty deliver it to trash bin
+	binlogicalCameraCallback(image_msg, "cam1");
 }
-// if all order part of bin belt picked then send agv and end competition
-
-
+void AriacSensorManager::binlogicalCameraCallback2(const osrf_gear::LogicalCameraImage::ConstPtr & image_msg){
+	binlogicalCameraCallback(image_msg, "cam2");
 }
 
+void AriacSensorManager::binlogicalCameraCallback(const osrf_gear::LogicalCameraImage::ConstPtr & image_msg, std::string cam_name){
+//// all bin part is empty fill the all bin part for segregate purpose
+//    setAllBinParts(image_msg);
+//// if all order part of conveyor belt picked then
+//if (conveyor_parts_picked) {
+//
+//	auto bin_order = order_manager_.getBinOrderParts();
+//	for(auto map_it = bin_order.begin(); map_it != bin_order.end(); map_it++){
+//		for(auto it = map_it->second.begin(); it != map_it->second.end(); it++){
+//			auto current_pose = it->getCurrentPose();
+//            order_manager_.pickPart(current_pose, 0);
+//		}
+//	}
+//    //call pick part to pick that part
+//
+//
+//    // if attached take it to quality camera
+//
+//    //if attached and if no faulty part  deliver it to agv end pose
+//
+//
+//    //if faulty deliver it to trash bin
+//}
+//// if all order part of bin belt picked then send agv and end competition
+//
+//
+}
 
-void AriacSensorManager::setAllBinParts(const osrf_gear::LogicalCameraImage::ConstPtr & image_msg){
+
+void AriacSensorManager::setAllBinParts(const osrf_gear::LogicalCameraImage::ConstPtr & image_msg, std::string cam_name){
     auto sensor_pose = image_msg->pose;
     auto current_time = ros::Time::now();
     tf2_ros::TransformListener tfListener(tfBuffer);
@@ -200,7 +208,9 @@ void AriacSensorManager::setAllBinParts(const osrf_gear::LogicalCameraImage::Con
     setPose(sensor_pose,transformStamped1);
     br_w_s.sendTransform(transformStamped1);
     ros::Duration(0.001).sleep();
-    all_binParts[sensor_pose].clear();
+    if(all_binParts.count(cam_name) == 1) {
+    all_binParts[cam_name].clear();
+    }
     for(auto it =image_msg->models.begin(); it!=image_msg->models.end();++it) {
         setPose( it->pose, transformStamped2);
         br_s_c.sendTransform(transformStamped2);
@@ -211,7 +221,7 @@ void AriacSensorManager::setAllBinParts(const osrf_gear::LogicalCameraImage::Con
                                                          ros::Time(0));
             geometry_msgs::Pose pose;
             setPose(transformStamped3, pose);
-            all_binParts[sensor_pose][partType].push_back(pose);
+            all_binParts[cam_name][partType].push_back(pose);
 
         }
         catch (tf2::TransformException &ex) {

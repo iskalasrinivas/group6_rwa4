@@ -1,9 +1,51 @@
-//
-// Created by zeid on 2/27/20.
-//
+/**
+ * @file      include/robot_controller.h
+ * @brief     Header file Robot contoller
+ * @author    Saurav Kumar
+ * @author    Raja Srinivas
+ * @author    Sanket Acharya
+ * @author    Dinesh Kadirimangalam
+ * @author    Preyash Parikh
+ * @copyright 2020
+ *
+ **BSD 3-Clause License
+ *
+ *Copyright (c) 2020
+ *All rights reserved.
+ *
+ *Redistribution and use in source and binary forms, with or without
+ *modification, are permitted provided that the following conditions are met:
+ *
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ *  and/or other materials provided with the distribution.
+ *
+ * Neither the name of the copyright holder nor the names of its
+ *  contributors may be used to endorse or promote products derived from
+ *  this software without specific prior written permission.
+ *
+ *THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ *AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ *IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ *FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ *DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ *SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ *CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ *OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ *OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 
-#ifndef GROUP6_RWA4_ROBOT_CONTROLLER_H
-#define GROUP6_RWA4_ROBOT_CONTROLLER_H
+#ifndef GROUP6_RWA4_ROBOT_CONTROLLER_H_
+#define GROUP6_RWA4_ROBOT_CONTROLLER_H_
+
+#include <iostream>
+#include <string>
+#include <vector>
+#include <initializer_list>
 
 #include <ros/ros.h>
 #include <geometry_msgs/Pose.h>
@@ -13,70 +55,69 @@
 
 #include <stdarg.h>
 #include <tf/transform_listener.h>
-#include <iostream>
-#include <string>
-#include <initializer_list>
+
+
 
 #include <osrf_gear/VacuumGripperControl.h>
 #include <osrf_gear/VacuumGripperState.h>
 
 class RobotController {
-private:
-	ros::NodeHandle robot_controller_nh_;
-	moveit::planning_interface::MoveGroupInterface::Options robot_controller_options;
-	ros::ServiceClient gripper_client_;
-	ros::NodeHandle gripper_nh_;
-	ros::Subscriber gripper_subscriber_;
+ private:
+  ros::NodeHandle robot_controller_nh_;
+  moveit::planning_interface::MoveGroupInterface::
+  Options robot_controller_options;
+  ros::ServiceClient gripper_client_;
+  ros::NodeHandle gripper_nh_;
+  ros::Subscriber gripper_subscriber_;
 
-	tf::TransformListener robot_tf_listener_;
-	tf::StampedTransform robot_tf_transform_;
-	tf::TransformListener agv_tf_listener_;
-	tf::StampedTransform agv_tf_transform_;
+  tf::TransformListener robot_tf_listener_;
+  tf::StampedTransform robot_tf_transform_;
+  tf::TransformListener agv_tf_listener_;
+  tf::StampedTransform agv_tf_transform_;
 
-	geometry_msgs::Pose target_pose_;
+  geometry_msgs::Pose target_pose_;
 
-	moveit::planning_interface::MoveGroupInterface robot_move_group_;
-	moveit::planning_interface::MoveGroupInterface::Plan robot_planner_;
+  moveit::planning_interface::MoveGroupInterface robot_move_group_;
+  moveit::planning_interface::MoveGroupInterface::Plan robot_planner_;
 
-	osrf_gear::VacuumGripperControl gripper_service_;
-	osrf_gear::VacuumGripperState gripper_status_;
+  osrf_gear::VacuumGripperControl gripper_service_;
+  osrf_gear::VacuumGripperState gripper_status_;
 
-	std::string object;
-	bool plan_success_;
-	std::vector<double> home_joint_pose_;
-	geometry_msgs::Pose home_cart_pose_;
-	geometry_msgs::Quaternion fixed_orientation_;
-	geometry_msgs::Pose agv_position_;
-	std::vector<double> end_position_;
-//	geometry_msgs::Pose end_pose_;
-	double offset_;
-	double roll_def_,pitch_def_,yaw_def_;
-	tf::Quaternion q;
-	int counter_;
-	bool gripper_state_, drop_flag_;
+std::string object;
+bool plan_success_;
+std::vector<double> home_joint_pose_;
+geometry_msgs::Pose home_cart_pose_;
+geometry_msgs::Quaternion fixed_orientation_;
+geometry_msgs::Pose agv_position_;
+std::vector<double> end_position_;
+// geometry_msgs::Pose end_pose_;
+double offset_;
+double roll_def_, pitch_def_, yaw_def_;
+tf::Quaternion q;
+int counter_;
+bool gripper_state_, drop_flag_;
 
-public:
-	RobotController(std::string);
-	~RobotController();
-	bool Planner();
-	void Execute();
-    void GoToTarget(std::vector<geometry_msgs::Pose> waypoints);
-	void GoToTarget(std::initializer_list<geometry_msgs::Pose>);
-	void GoToTarget(const geometry_msgs::Pose& );
-	void SendRobotHome();
-	bool DropPart(geometry_msgs::Pose );
-	void GripperToggle(const bool& );
-	void GripperCallback(const osrf_gear::VacuumGripperState::ConstPtr& );
-	void GripperStateCheck(geometry_msgs::Pose );
-	bool PickPart(geometry_msgs::Pose& );
-	bool isPartAttached();
-	void GoToEnd();
-	void GoToPose(const std::vector<double> &);
-	geometry_msgs::Pose getHomeCartPose();
-//	void GotoTarget(const geometry_msgs::Pose&);
-//	geometry_msgs::Pose convertToArmBaseFrame();
-//	geometry_msgs::Pose convertToArmBaseFrame( const  geometry_msgs::TransformStamped& );
-
-
+ public:
+  explicit RobotController(std::string);
+  ~RobotController();
+  bool Planner();
+  void Execute();
+  void GoToTarget(std::vector<geometry_msgs::Pose> waypoints);
+  void GoToTarget(std::initializer_list<geometry_msgs::Pose>);
+  void GoToTarget(const geometry_msgs::Pose&);
+  void SendRobotHome();
+  bool DropPart(geometry_msgs::Pose);
+  void GripperToggle(const bool&);
+  void GripperCallback(const osrf_gear::VacuumGripperState::ConstPtr&);
+  void GripperStateCheck(geometry_msgs::Pose);
+  bool PickPart(geometry_msgs::Pose&);
+  bool isPartAttached();
+  void GoToEnd();
+  void GoToPose(const std::vector<double> &);
+  geometry_msgs::Pose getHomeCartPose();
+  void GotoTarget(const geometry_msgs::Pose&);
+//  geometry_msgs::Pose convertToArmBaseFrame();
+//  geometry_msgs::Pose convertToArmBaseFrame
+//  ( const  geometry_msgs::TransformStamped& );
 };
-#endif //GROUP6_RWA4_ROBOT_CONTROLLER_H
+#endif  // GROUP6_RWA4_ROBOT_CONTROLLER_H_

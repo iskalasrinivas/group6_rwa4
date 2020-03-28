@@ -1,9 +1,47 @@
-//
-// Created by zeid on 2/27/20.
-//
+/**
+ * @file      src/robot_controller.cpp
+ * @brief     Source file for Robot Controller
+ * @author    Saurav Kumar
+ * @author    Raja Srinivas
+ * @author    Sanket Acharya
+ * @author    Dinesh Kadirimangalam
+ * @author    Preyash Parikh
+ * @copyright 2020
+ *
+ **BSD 3-Clause License
+ *
+ *Copyright (c) 2020
+ *All rights reserved.
+ *
+ *Redistribution and use in source and binary forms, with or without
+ *modification, are permitted provided that the following conditions are met:
+ *
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ *  and/or other materials provided with the distribution.
+ *
+ * Neither the name of the copyright holder nor the names of its
+ *  contributors may be used to endorse or promote products derived from
+ *  this software without specific prior written permission.
+ *
+ *THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ *AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ *IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ *FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ *DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ *SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ *CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ *OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ *OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 #include <tf/transform_listener.h>
 #include <tf2_ros/transform_broadcaster.h>
-#include "../include/group6_rwa4/robot_controller.h"
+#include "robot_controller.h"
 
 /**
  * Constructor for the robot
@@ -138,17 +176,17 @@ void RobotController::GoToTarget(const geometry_msgs::Pose& pose) {
 	ROS_INFO_STREAM("Point reached...");
 }
 
-//void RobotController::GotoTarget(const geometry_msgs::Pose& pose) {
-//	target_pose_.orientation = fixed_orientation_;
-//	target_pose_.position = pose.position;
-////	ros::AsyncSpinner spinner(4);
-//	robot_move_group_.setPoseTarget(target_pose_);
-////	spinner.start();
-//		ROS_INFO_STREAM("Point success");
-//		robot_move_group_.move();
-//		ros::Duration(1.5).sleep();
-//	ROS_INFO_STREAM("Point reached...");
-//}
+void RobotController::GotoTarget(const geometry_msgs::Pose& pose) {
+	target_pose_.orientation = fixed_orientation_;
+	target_pose_.position = pose.position;
+//	ros::AsyncSpinner spinner(4);
+	robot_move_group_.setPoseTarget(target_pose_);
+//	spinner.start();
+		ROS_INFO_STREAM("Point success");
+		robot_move_group_.move();
+		ros::Duration(1.5).sleep();
+	ROS_INFO_STREAM("Point reached...");
+}
 
 void RobotController::GoToTarget(
         std::vector<geometry_msgs::Pose> waypoints) {
@@ -258,61 +296,6 @@ void RobotController::GripperToggle(const bool& state) {
 	}
 }
 
-// bool RobotController::dropPart(geometry_msgs::Pose part_pose) {
-//   counter_++;
-//
-//   pick = false;
-//   drop = true;
-//
-//   ROS_WARN_STREAM("Dropping the part number: " << counter_);
-//
-//   // ROS_INFO_STREAM("Moving to end of conveyor...");
-//   // robot_move_group_.setJointValueTarget(part_pose);
-//   // this->execute();
-//   // ros::Duration(1.0).sleep();
-//   // this->gripper_state_check(part_pose);
-//
-//   if (drop == false) {
-//     // ROS_INFO_STREAM("I am stuck here..." << object);
-//     ros::Duration(2.0).sleep();
-//     return drop;
-//   }
-//   ROS_INFO_STREAM("Dropping on AGV...");
-//
-//   // agv_position_.position.x -= 0.1;
-//   // if (counter_ == 1) {
-//   //   agv_position_.position.y -= 0.1;
-//   // }
-//   // if (counter_ >= 2) {
-//   //   agv_position_.position.y += 0.1;
-//   //   // agv_position_.position.x +=0.1;
-//   // }
-//
-//   auto temp_pose = part_pose;
-//   // auto temp_pose = agv_position_;
-//   temp_pose.position.z += 0.35;
-//   // temp_pose.position.y += 0.5;
-//
-//   // this->setTarget(part_pose);
-//   // this->execute();
-//   // ros::Duration(1.0).sleep();
-//   this->goToTarget({temp_pose, part_pose});
-//   ros::Duration(1).sleep();
-//   ROS_INFO_STREAM("Actuating the gripper...");
-//   this->gripperToggle(false);
-//
-//   // ROS_INFO_STREAM("Moving to end of conveyor...");
-//   // robot_move_group_.setJointValueTarget(end_position_);
-//   // this->execute();
-//   // ros::Duration(1.0).sleep();
-//
-//   ROS_INFO_STREAM("Going to home...");
-//   // this->sendRobotHome();
-//   // temp_pose = home_cart_pose_;
-//   // temp_pose.position.z -= 0.05;
-//   this->goToTarget({temp_pose, home_cart_pose_});
-//   return drop;
-// }
 
 bool RobotController::DropPart(geometry_msgs::Pose part_pose) {
 	// counter_++;
@@ -330,23 +313,6 @@ bool RobotController::DropPart(geometry_msgs::Pose part_pose) {
 		ros::Duration(1.0).sleep();
 		ROS_INFO_STREAM("Actuating the gripper...");
 		this->GripperToggle(false);
-
-		//        auto temp_pose = part_pose;
-		//        temp_pose.position.z += 0.5;
-		//        this->GoToTarget({temp_pose, part_pose});
-		//        ros::Duration(5).sleep();
-		//        ros::spinOnce();
-		//
-		//
-		//        ROS_INFO_STREAM("Actuating the gripper...");
-		//        this->GripperToggle(false);
-		//
-		//        ros::spinOnce();
-		//        if (!gripper_state_) {
-		//            ROS_INFO_STREAM("Going to home position...");
-		//            this->GoToTarget({temp_pose, home_cart_pose_});
-		//            ros::Duration(3.0).sleep();
-		//        }
 	}
 
 	drop_flag_ = false;
@@ -398,6 +364,70 @@ bool RobotController::isPartAttached(){
 geometry_msgs::Pose RobotController::getHomeCartPose(){
 	return home_cart_pose_;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//bool RobotController::DropPart(geometry_msgs::Pose part_pose) {
+//	// counter_++;
+//
+//	drop_flag_ = true;
+//
+//	ros::spinOnce();
+//	ROS_INFO_STREAM("Placing phase activated...");
+//
+//	if (gripper_state_){//--while the part is still attached to the gripper
+//		//--move the robot to the end of the rail
+//		ROS_INFO_STREAM("Moving towards AGV1...");
+//		robot_move_group_.setJointValueTarget(end_position_);
+//		this->Execute();
+//		ros::Duration(1.0).sleep();
+//		ROS_INFO_STREAM("Actuating the gripper...");
+//		this->GripperToggle(false);
+//
+//		//        auto temp_pose = part_pose;
+//		//        temp_pose.position.z += 0.5;
+//		//        this->GoToTarget({temp_pose, part_pose});
+//		//        ros::Duration(5).sleep();
+//		//        ros::spinOnce();
+//		//
+//		//
+//		//        ROS_INFO_STREAM("Actuating the gripper...");
+//		//        this->GripperToggle(false);
+//		//
+//		//        ros::spinOnce();
+//		//        if (!gripper_state_) {
+//		//            ROS_INFO_STREAM("Going to home position...");
+//		//            this->GoToTarget({temp_pose, home_cart_pose_});
+//		//            ros::Duration(3.0).sleep();
+//		//        }
+//	}
+//
+//	drop_flag_ = false;
+//	return gripper_state_;
+//}
 
 //geometry_msgs::Pose RobotController::convertToArmBaseFrame( const geometry_msgs::PoseStamped& pose_msg) {
 //	geometry_msgs::PoseStamped arm_base_part_pose_stamped;
@@ -488,3 +518,59 @@ geometry_msgs::Pose RobotController::getHomeCartPose(){
 // return arm_base_part_pose;
 //}
 
+
+// bool RobotController::dropPart(geometry_msgs::Pose part_pose) {
+//   counter_++;
+//
+//   pick = false;
+//   drop = true;
+//
+//   ROS_WARN_STREAM("Dropping the part number: " << counter_);
+//
+//   // ROS_INFO_STREAM("Moving to end of conveyor...");
+//   // robot_move_group_.setJointValueTarget(part_pose);
+//   // this->execute();
+//   // ros::Duration(1.0).sleep();
+//   // this->gripper_state_check(part_pose);
+//
+//   if (drop == false) {
+//     // ROS_INFO_STREAM("I am stuck here..." << object);
+//     ros::Duration(2.0).sleep();
+//     return drop;
+//   }
+//   ROS_INFO_STREAM("Dropping on AGV...");
+//
+//   // agv_position_.position.x -= 0.1;
+//   // if (counter_ == 1) {
+//   //   agv_position_.position.y -= 0.1;
+//   // }
+//   // if (counter_ >= 2) {
+//   //   agv_position_.position.y += 0.1;
+//   //   // agv_position_.position.x +=0.1;
+//   // }
+//
+//   auto temp_pose = part_pose;
+//   // auto temp_pose = agv_position_;
+//   temp_pose.position.z += 0.35;
+//   // temp_pose.position.y += 0.5;
+//
+//   // this->setTarget(part_pose);
+//   // this->execute();
+//   // ros::Duration(1.0).sleep();
+//   this->goToTarget({temp_pose, part_pose});
+//   ros::Duration(1).sleep();
+//   ROS_INFO_STREAM("Actuating the gripper...");
+//   this->gripperToggle(false);
+//
+//   // ROS_INFO_STREAM("Moving to end of conveyor...");
+//   // robot_move_group_.setJointValueTarget(end_position_);
+//   // this->execute();
+//   // ros::Duration(1.0).sleep();
+//
+//   ROS_INFO_STREAM("Going to home...");
+//   // this->sendRobotHome();
+//   // temp_pose = home_cart_pose_;
+//   // temp_pose.position.z -= 0.05;
+//   this->goToTarget({temp_pose, home_cart_pose_});
+//   return drop;
+// }

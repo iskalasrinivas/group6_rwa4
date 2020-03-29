@@ -57,8 +57,7 @@
 #include <osrf_gear/Order.h>
 #include <osrf_gear/Proximity.h>
 #include <trajectory_msgs/JointTrajectory.h>
-#include "sensor.h"
-#include "order_manager.h"
+#include <sensor.h>
 
 //class AriacOrderManager;
 
@@ -91,7 +90,7 @@ public:
 	~Competition();
 	/// Called when a new message is received.
 	void current_score_callback(const std_msgs::Float32::ConstPtr & );
-
+	
 	/// Called when a new message is received.
 	void competition_state_callback(const std_msgs::String::ConstPtr & );
 

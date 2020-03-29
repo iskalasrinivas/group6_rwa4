@@ -62,62 +62,72 @@
 #include <osrf_gear/VacuumGripperState.h>
 
 class RobotController {
- private:
-  ros::NodeHandle robot_controller_nh_;
-  moveit::planning_interface::MoveGroupInterface::
-  Options robot_controller_options;
-  ros::ServiceClient gripper_client_;
-  ros::NodeHandle gripper_nh_;
-  ros::Subscriber gripper_subscriber_;
+private:
+	ros::NodeHandle robot_controller_nh_;
+	moveit::planning_interface::MoveGroupInterface::
+	Options robot_controller_options;
+	ros::ServiceClient gripper_client_;
+	ros::NodeHandle gripper_nh_;
+	ros::Subscriber gripper_subscriber_;
 
-  tf::TransformListener robot_tf_listener_;
-  tf::StampedTransform robot_tf_transform_;
-  tf::TransformListener agv_tf_listener_;
-  tf::StampedTransform agv_tf_transform_;
+	tf::TransformListener robot_tf_listener_;
+	tf::StampedTransform robot_tf_transform_;
+	tf::TransformListener agv_tf_listener_;
+	tf::StampedTransform agv_tf_transform_;
 
-  geometry_msgs::Pose target_pose_;
+	geometry_msgs::Pose target_pose_;
+	geometry_msgs::Pose home_cart_pose_;
 
-  moveit::planning_interface::MoveGroupInterface robot_move_group_;
-  moveit::planning_interface::MoveGroupInterface::Plan robot_planner_;
+	std::vector<double> home_joint_pose_;
+	std::vector<double> quality_cam_joint_position_;
+	std::vector<double> trash_bin_joint_position_;
 
-  osrf_gear::VacuumGripperControl gripper_service_;
-  osrf_gear::VacuumGripperState gripper_status_;
 
-std::string object;
-bool plan_success_;
-std::vector<double> home_joint_pose_;
-geometry_msgs::Pose home_cart_pose_;
-geometry_msgs::Quaternion fixed_orientation_;
-geometry_msgs::Pose agv_position_;
-std::vector<double> end_position_;
-// geometry_msgs::Pose end_pose_;
-double offset_;
-double roll_def_, pitch_def_, yaw_def_;
-tf::Quaternion q;
-int counter_;
-bool gripper_state_, drop_flag_;
+	moveit::planning_interface::MoveGroupInterface robot_move_group_;
+	moveit::planning_interface::MoveGroupInterface::Plan robot_planner_;
 
- public:
-  explicit RobotController(std::string);
-  ~RobotController();
-  bool Planner();
-  void Execute();
-  void GoToTarget(std::vector<geometry_msgs::Pose> waypoints);
-  void GoToTarget(std::initializer_list<geometry_msgs::Pose>);
-  void GoToTarget(const geometry_msgs::Pose&);
-  void SendRobotHome();
-  bool DropPart(geometry_msgs::Pose);
-  void GripperToggle(const bool&);
-  void GripperCallback(const osrf_gear::VacuumGripperState::ConstPtr&);
-  void GripperStateCheck(geometry_msgs::Pose);
-  bool PickPart(geometry_msgs::Pose&);
-  bool isPartAttached();
-  void GoToEnd();
-  void GoToPose(const std::vector<double> &);
-  geometry_msgs::Pose getHomeCartPose();
-  void GotoTarget(const geometry_msgs::Pose&);
-//  geometry_msgs::Pose convertToArmBaseFrame();
-//  geometry_msgs::Pose convertToArmBaseFrame
-//  ( const  geometry_msgs::TransformStamped& );
+	osrf_gear::VacuumGripperControl gripper_service_;
+	osrf_gear::VacuumGripperState gripper_status_;
+
+	std::string object;
+	bool plan_success_;
+
+
+	geometry_msgs::Quaternion fixed_orientation_;
+	geometry_msgs::Pose agv_position_;
+
+	// geometry_msgs::Pose end_pose_;
+	double offset_;
+	double roll_def_, pitch_def_, yaw_def_;
+	tf::Quaternion q;
+	int counter_;
+	bool gripper_state_, drop_flag_;
+	bool is_at_qualitySensor;
+
+public:
+	explicit RobotController(std::string);
+	~RobotController();
+	bool Planner();
+	void Execute();
+	void GoToTarget(std::vector<geometry_msgs::Pose> waypoints);
+	void GoToTarget(std::initializer_list<geometry_msgs::Pose>);
+	void GoToTarget(const geometry_msgs::Pose&);
+
+//	bool DropPart(geometry_msgs::Pose);
+	void GripperToggle(const bool&);
+	void GripperCallback(const osrf_gear::VacuumGripperState::ConstPtr&);
+//	void GripperStateCheck(geometry_msgs::Pose);
+//	bool PickPart(geometry_msgs::Pose&);
+	bool isPartAttached();
+	bool isAtQualitySensor();
+	void setAtQualitySensor();
+
+
+	void GoToPose(const std::vector<double> &);
+	geometry_msgs::Pose getHomeCartPose();
+
+	void SendRobotHome();
+	void dropInTrash();
+	void GoToQualityCamera();
 };
 #endif  // GROUP6_RWA4_ROBOT_CONTROLLER_H_

@@ -44,13 +44,13 @@
 #include <geometry_msgs/Pose.h>
 
 class AriacOrderPart {
-private:
+ private:
 	std::string part_type_;
 	geometry_msgs::Pose end_pose_;
 	geometry_msgs::Pose current_pose_;
 
-public:
-	AriacOrderPart();
+ public:
+	AriacOrderPart(std::string, geometry_msgs::Pose);
 	~AriacOrderPart();
 
 

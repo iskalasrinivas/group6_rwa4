@@ -54,60 +54,65 @@
 #include <moveit/move_group_interface/move_group_interface.h>
 #include <osrf_gear/LogicalCameraImage.h>
 #include <osrf_gear/Order.h>
-#include "robot_controller.h"
-#include "ariac_order_part.h"
+#include <robot_controller.h>
+#include <ariac_order_part.h>
 
 
 using std::vector;
 
 class AriacOrderManager {
- private:
-  ros::NodeHandle order_manager_nh_;
-  ros::Subscriber order_subscriber_;
-  std::vector<osrf_gear::Order> received_orders_;
-  vector<AriacOrderPart> part_manager;
-  std::vector<std::string> product_type;
-  RobotController arm1_;
-  tf::TransformListener part_tf_listener_;
-  std::pair<std::string, geometry_msgs::Pose> product_type_pose_;
-  std::string object;
-  std::map<std::string, std::vector<std::string>> product_frame_list_;
-  osrf_gear::Order order_;
+private:
+	ros::NodeHandle order_manager_nh_;
+	ros::Subscriber order_subscriber_;
+	std::vector<osrf_gear::Order> received_orders_;
+	vector<AriacOrderPart> part_manager;
+	std::vector<std::string> product_type;
+	RobotController arm1_;
+	tf::TransformListener part_tf_listener_;
+	std::pair<std::string, geometry_msgs::Pose> product_type_pose_;
+	std::string object;
+	std::map<std::string, std::vector<std::string>> product_frame_list_;
+	osrf_gear::Order order_;
 
-  std::map<std::string,
-   std::map<std::string, std::vector<geometry_msgs::Pose>>>* all_bin_parts;
-  std::map<std::string, std::vector<AriacOrderPart>> all_orderParts;
-  std::map<std::string, std::vector<AriacOrderPart>> conveyor_order_parts;
-  std::map<std::string, std::vector<AriacOrderPart>> bin_order_parts;
-  bool task_pending;
-  bool isBinCameraCalled;
-  bool part_is_faulty;
-  geometry_msgs::Pose quality_control_camera_pose;
-  geometry_msgs::Pose faulty_bin_pose;
-  geometry_msgs::Pose agv_pose;
+	std::map<std::string,
+	std::map<std::string, std::vector<geometry_msgs::Pose>>>* all_bin_parts;
+	std::map<std::string, std::vector<AriacOrderPart>> all_orderParts;
+	std::map<std::string, std::vector<AriacOrderPart>> conveyor_order_parts;
+	std::map<std::string, std::vector<AriacOrderPart>> bin_order_parts;
+	bool task_pending;
+	bool isBinCameraCalled;
+	bool part_is_faulty;
+	bool conveyor_parts_picked;
+	geometry_msgs::Pose quality_control_camera_pose;
+	geometry_msgs::Pose faulty_bin_pose;
+	geometry_msgs::Pose agv_pose;
 
- public:
-  explicit AriacOrderManager(std::map<std::string,
-  std::map<std::string, std::vector<geometry_msgs::Pose>>>*);
-  ~AriacOrderManager();
-  void OrderCallback(const osrf_gear::Order::ConstPtr&);
-  void transformAndPickPart(const geometry_msgs::TransformStamped& , int);
-  void pickPart(geometry_msgs::Pose, int);
-  void setOrderParts();
-  void setCurrentPose(std::vector<AriacOrderPart> &,
-   const std::vector<geometry_msgs::Pose> &);
-  void segregateOrders();
-  std::map<std::string, std::vector<AriacOrderPart>> getBinOrderParts();
-  std::map<std::string, std::vector<AriacOrderPart>> getConveyorOrderParts();
-  void removeConveyorPart(AriacOrderPart*);
-  void removeBinPart(AriacOrderPart* orderPart);
-  void dropPartToAgv();
-  void moveToTarget(geometry_msgs::Pose);
-  void SubmitAGV(int);
-  ros::NodeHandle* getnode();
-  void setBinCameraCalled();
-  bool inVicinity(const geometry_msgs::Pose&);
-//  void pathplanning(const geometry_msgs::TransformStamped&);
+public:
+	explicit AriacOrderManager(std::map<std::string,
+			std::map<std::string, std::vector<geometry_msgs::Pose>>>*);
+	~AriacOrderManager();
+
+	ros::NodeHandle* getnode();
+	RobotController* getArmObject();
+	void OrderCallback(const osrf_gear::Order::ConstPtr&);
+	void setOrderParts();
+	void setCurrentPose(std::vector<AriacOrderPart> &,
+			const std::vector<geometry_msgs::Pose> &);
+	void setBinCameraCalled();
+	void segregateOrders();
+	std::map<std::string, std::vector<AriacOrderPart>> getBinOrderParts();
+	std::map<std::string, std::vector<AriacOrderPart>> getConveyorOrderParts();
+	void removeConveyorPart(AriacOrderPart*);
+	void removeBinPart(AriacOrderPart* orderPart);
+	void dropPartToAgv();
+	void moveToTarget(geometry_msgs::Pose);
+	void SubmitAGV(int);
+
+	bool inVicinity(const geometry_msgs::Pose&);
+	void transformAndPickPart(const geometry_msgs::TransformStamped& , int);
+	void pickPart(geometry_msgs::Pose, int);
+	void setConveyorPartsPicked(const bool &);
+	bool isConveyorPartsPicked();
 };
 
 #endif //GROUP6_RWA4_ORDER_MANAGER_H_

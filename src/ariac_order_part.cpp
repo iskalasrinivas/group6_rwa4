@@ -41,30 +41,30 @@
 
 #include <ariac_order_part.h>
 
-AriacOrderPart::AriacOrderPart():part_type_{} {}
+AriacOrderPart::AriacOrderPart(std::string part_type, geometry_msgs::Pose e_pose):part_type_(part_type), end_pose_(e_pose) {}
 AriacOrderPart::~AriacOrderPart() {}
 
 void AriacOrderPart::setPartType(std::string part_type) {
-    part_type_ = part_type;
+	part_type_ = part_type;
 }
 
 void AriacOrderPart::setEndPose(geometry_msgs::Pose part_pose) {
-    end_pose_ = part_pose;
-    end_pose_.position.z +=0.3;
+	end_pose_ = part_pose;
+	end_pose_.position.z +=0.3;
 }
 
 void AriacOrderPart::setCurrentPose(geometry_msgs::Pose pose) {
-    current_pose_ = pose;
+	current_pose_ = pose;
 }
 
 const std::string AriacOrderPart::getPartType() {
-    return part_type_;
+	return part_type_;
 }
 
 const geometry_msgs::Pose AriacOrderPart::getEndPose() {
-    return end_pose_;
+	return end_pose_;
 }
 
 const geometry_msgs::Pose AriacOrderPart::getCurrentPose() {
-    return current_pose_;
+	return current_pose_;
 }

@@ -39,37 +39,29 @@
  *OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "sensor.h"
+#include <sensor.h>
 
 
-AriacSensorManager::AriacSensorManager() : order_manager_(& all_binParts) {
+AriacSensorManager::AriacSensorManager() : order_manager_(& all_binParts), is_faulty(false) {
 	ROS_INFO_STREAM(">>>>> Subscribing to logical sensors");
-    camera_1_subscriber_ = sensor_nh_.subscribe("/ariac/logical_camera_1", 10 ,
-                                                           &AriacSensorManager::binlogicalCameraCallback1, this);
+	camera_1_subscriber_ = sensor_nh_.subscribe("/ariac/logical_camera_1", 10 ,
+			&AriacSensorManager::binlogicalCameraCallback1, this);
 	camera_4_subscriber_ = sensor_nh_.subscribe("/ariac/logical_camera_4", 10 ,
-	                                                  &AriacSensorManager::beltlogicalCameraCallback, this);
-    camera_5_subscriber_ = sensor_nh_.subscribe("/ariac/logical_camera_5", 10 ,
-                                                &AriacSensorManager::binlogicalCameraCallback2, this);
-    quality_control_camera_subscriber_ = sensor_nh_.subscribe("/ariac/quality_control_sensor_1", 10 , &AriacSensorManager::qualityControlSensor1Callback, this);
+			&AriacSensorManager::beltlogicalCameraCallback, this);
+	camera_5_subscriber_ = sensor_nh_.subscribe("/ariac/logical_camera_5", 10 ,
+			&AriacSensorManager::binlogicalCameraCallback2, this);
+	quality_control_camera_subscriber_ =
+			sensor_nh_.subscribe("/ariac/quality_control_sensor_1", 10 ,
+					&AriacSensorManager::qualityControlSensorCallback, this);
+	tracking_part_ = new osrf_gear::Model();
+	tracking_part_ = nullptr;
 }
 
 AriacSensorManager::~AriacSensorManager() {}
 
-void AriacSensorManager::qualityControlSensor1Callback(const osrf_gear::LogicalCameraImage::ConstPtr &image_msg){
-
-}
-
-void AriacSensorManager::setPose( const geometry_msgs::Pose src, geometry_msgs::Pose & dstn){
-	dstn.position.x = src.position.x;
-	dstn.position.y = src.position.y;
-	dstn.position.z = src.position.z;
-	dstn.orientation.x = src.orientation.x;
-	dstn.orientation.y = src.orientation.y;
-	dstn.orientation.z = src.orientation.z;
-	dstn.orientation.w = src.orientation.w;
-}
-
-void AriacSensorManager::setPose(const geometry_msgs::Pose pose, geometry_msgs::TransformStamped &transformStamped ){
+void AriacSensorManager::setPose
+(const geometry_msgs::Pose & pose,
+		geometry_msgs::TransformStamped & transformStamped ) {
 	transformStamped.transform.translation.x = pose.position.x;
 	transformStamped.transform.translation.y = pose.position.y;
 	transformStamped.transform.translation.z = pose.position.z;
@@ -79,182 +71,263 @@ void AriacSensorManager::setPose(const geometry_msgs::Pose pose, geometry_msgs::
 	transformStamped.transform.rotation.w = pose.orientation.w;
 }
 
-void AriacSensorManager::setPose(const geometry_msgs::TransformStamped transformStamped, geometry_msgs::Pose &pose){
-     pose.position.x = transformStamped.transform.translation.x;
-     pose.position.y = transformStamped.transform.translation.y;
-     pose.position.z = transformStamped.transform.translation.z;
-     pose.orientation.x = transformStamped.transform.rotation.x;
-     pose.orientation.y = transformStamped.transform.rotation.y;
-     pose.orientation.z = transformStamped.transform.rotation.z;
-     pose.orientation.w = transformStamped.transform.rotation.w;
+void AriacSensorManager::setPose
+(const geometry_msgs::Pose & src, geometry_msgs::Pose & dstn) {
+	dstn.position.x = src.position.x;
+	dstn.position.y = src.position.y;
+	dstn.position.z = src.position.z;
+	dstn.orientation.x = src.orientation.x;
+	dstn.orientation.y = src.orientation.y;
+	dstn.orientation.z = src.orientation.z;
+	dstn.orientation.w = src.orientation.w;
 }
 
-std::map<std::string, std::map<std::string, std::vector<geometry_msgs::Pose>>> AriacSensorManager::getBinParts(){
-     return all_binParts;
+void AriacSensorManager::setPose
+(const geometry_msgs::TransformStamped & transformStamped,
+		geometry_msgs::Pose &pose) {
+	pose.position.x = transformStamped.transform.translation.x;
+	pose.position.y = transformStamped.transform.translation.y;
+	pose.position.z = transformStamped.transform.translation.z;
+	pose.orientation.x = transformStamped.transform.rotation.x;
+	pose.orientation.y = transformStamped.transform.rotation.y;
+	pose.orientation.z = transformStamped.transform.rotation.z;
+	pose.orientation.w = transformStamped.transform.rotation.w;
 }
 
-void AriacSensorManager::computeWorldTransformation(const osrf_gear::LogicalCameraImage::ConstPtr & image_msg) {
-    auto sensor_pose = image_msg->pose;
-    auto current_time = ros::Time::now();
-    tf2_ros::TransformListener tfListener(tfBuffer);
-
-
-    transformStamped1.header.stamp = current_time;
-    transformStamped1.header.frame_id = "world";
-    transformStamped1.child_frame_id = "logical_sensor";
-
-    transformStamped2.header.stamp = current_time;
-    transformStamped2.header.frame_id = "logical_sensor";
-    transformStamped2.child_frame_id = "logical_sensor_child";
-
-    setPose(sensor_pose, transformStamped1);
-    br_w_s.sendTransform(transformStamped1);
-    ros::Duration(0.001).sleep();
-    for (auto it = image_msg->models.begin(); it != image_msg->models.end(); ++it) {
-        setPose(it->pose, transformStamped2);
-        br_s_c.sendTransform(transformStamped2);
-        ros::Duration(0.001).sleep();
-        try {
-            transformStamped3 = tfBuffer.lookupTransform("world", "logical_sensor_child",
-                                                         ros::Time(0));
-
-        }
-        catch (tf2::TransformException &ex) {
-            ROS_WARN("exception");
-            ROS_WARN("%s", ex.what());
-            ros::Duration(0.001).sleep();
-        }
-
-
-    }
+std::map<std::string,std::map<std::string,
+std::vector<geometry_msgs::Pose>>> AriacSensorManager::getBinParts() {
+	return all_binParts;
 }
 
+void AriacSensorManager::computeWorldTransformation
+(const geometry_msgs::Pose & sensor_pose, const geometry_msgs::Pose & part_pose, geometry_msgs::Pose & current_pose) {
+	auto current_time = ros::Time::now();
+	tf2_ros::TransformListener tfListener(tfBuffer);
+	transformStamped1.header.stamp = current_time;
+	transformStamped1.header.frame_id = "world";
+	transformStamped1.child_frame_id = "logical_sensor";
 
+	transformStamped2.header.stamp = current_time;
+	transformStamped2.header.frame_id = "logical_sensor";
+	transformStamped2.child_frame_id = "logical_sensor_child";
 
+	setPose(sensor_pose, transformStamped1);
+	br_w_s.sendTransform(transformStamped1);
+	ros::Duration(0.001).sleep();
+	setPose(part_pose, transformStamped2);
+	br_s_c.sendTransform(transformStamped2);
+	ros::Duration(0.001).sleep();
+	try {
+		transformStamped3 = tfBuffer.lookupTransform
+				("world", "logical_sensor_child",
+						ros::Time(0));
+		setPose(transformStamped3, current_pose);
+	}
+	catch (tf2::TransformException &ex) {
+		ROS_WARN("exception");
+		ROS_WARN("%s", ex.what());
+		ros::Duration(0.001).sleep();
+	}
+}
+
+void AriacSensorManager::setTrackingPartInWorld() {
+	setPose(tracking_pose_in_sensor, transformStamped2);
+	br_s_c.sendTransform(transformStamped2);
+	ros::Duration(0.01).sleep();
+	try{
+		transformStamped3 = tfBuffer.lookupTransform("world", "logical_sensor_child",
+				ros::Time(0));
+	}
+	catch (tf2::TransformException &ex) {
+		ROS_WARN("exception");
+		ROS_WARN("%s",ex.what());
+		ros::Duration(0.01).sleep();
+	}
+	setPose(transformStamped3, tracking_part_->pose);
+}
 
 void AriacSensorManager::beltlogicalCameraCallback(const osrf_gear::LogicalCameraImage::ConstPtr & image_msg) {
-//	// order type same as camera type
-//	    // computeWorldTransformation(image_msg);
-//		//order_manager_.pathplanning(transformStamped3);
-//        if(!order_manager_.getConveyorOrderParts().empty()){
-//            // convert image_msg to world frame
-//
-//            //call pick part to pick that part
-//
-//            // if attached take it to quality camera
-//
-//            //if attached and if no faulty part  deliver it to agv end pose
-//
-//
-//            //if faulty deliver it to trash bin
-//        } else {
-//            //set bool :all order part of conveyor belt picked
-//        }
-//
-//
+	auto conveyor_order = order_manager_.getConveyorOrderParts();
+	auto sensor_pose = image_msg->pose;
+	auto current_time = ros::Time::now();
+	tf2_ros::TransformListener tfListener(tfBuffer);
+
+	transformStamped1.header.stamp = current_time;
+	transformStamped1.header.frame_id = "world";
+	transformStamped1.child_frame_id = "logical_sensor";
+
+	transformStamped2.header.stamp = current_time;
+	transformStamped2.header.frame_id = "logical_sensor";
+	transformStamped2.child_frame_id = "logical_sensor_child";
+
+	setPose(sensor_pose, transformStamped1);
+	br_w_s.sendTransform(transformStamped1);
+	ros::Duration(0.01).sleep();
+	for (auto it = image_msg->models.begin(); it!=image_msg->models.end();++it) {
+		if (conveyor_order.count(it->type)) {
+			auto part_type = it->type;
+			if (tracking_part_ == nullptr) {
+				tracking_part_->type = it->type;
+				tracking_part_->pose = it->pose;
+				tracking_pose_in_sensor = it->pose;
+				setTrackingPartInWorld();
+			} else {
+				if (it->type.compare(tracking_part_->type) == 0 && it-> pose.position.z > tracking_pose_in_sensor.position.z ) {  //error comapring world with sensor frame
+					tracking_pose_in_sensor = it->pose;
+					setTrackingPartInWorld();
+				}
+			}
+		}
+	}
+	if (tracking_part_ != nullptr) {
+		order_manager_.pickPart(tracking_part_->pose, 0.2);
+		if(order_manager_.getArmObject()->isAtQualitySensor()) {
+			if(is_faulty) {
+				order_manager_.getArmObject()->dropInTrash();
+				tracking_part_ = nullptr;
+			} else {
+				AriacOrderPart* orderbeltPart;
+				if(conveyor_order.count(tracking_part_->type)){
+					orderbeltPart = &conveyor_order[tracking_part_->type].back();
+
+				}
+				dropInAGV(orderbeltPart->getEndPose);
+				order_manager_.removeConveyorPart(orderbeltPart);
+				tracking_part_ = nullptr;
+			}
+		}
+	}
+	if(order_manager_.getConveyorOrderParts().size() == 0) {
+		order_manager_.setConveyorPartsPicked(true);
+	}
+}
+
+
+void AriacSensorManager::setNewCurrentPose(AriacOrderPart *order_bin_part){
+	auto current_pose = order_bin_part->getCurrentPose();
+}
+
+void AriacSensorManager::updateFaultyPartPose(AriacOrderPart* part){
+	if(faulty_part_ != nullptr){
+		for (auto cam_it : all_binParts) {
+			if(cam_it.second.count(part->getPartType())) {
+				part->setCurrentPose(cam_it.second[part->getPartType()].back());
+				return;
+			}
+		}
+	}
+	faulty_part_=nullptr;
+}
+
+void AriacSensorManager::binlogicalCameraCallback
+(const osrf_gear::LogicalCameraImage::ConstPtr & image_msg,
+		const std::string& cam_name) {
+
+	setAllBinParts(image_msg, cam_name);
+	updateFaultyPartPose(faulty_part_);
+	if (order_manager_.isConveyorPartsPicked()) {
+		auto bin_order = order_manager_.getBinOrderParts();
+		for(auto vec_it = bin_order.begin(); vec_it != bin_order.end(); ++vec_it){
+			for(auto it = vec_it->second.begin(); it != vec_it->second.end(); ++it){
+				auto current_pose = it->getCurrentPose();
+				auto end_pose = it->getEndPose();
+				order_manager_.pickPart(current_pose, 0);
+				order_manager_.getArmObject()->GoToQualityCamera();
+				if(order_manager_.getArmObject()->isAtQualitySensor()) {
+					if(is_faulty) {
+						order_manager_.getArmObject()->dropInTrash();
+						setNewBinOrder(vec_it, it);
+						updateFaultyPartPose(it);
+						return;
+					} else {
+						dropInAGV(end_pose);
+					}
+				}
+
+
+			}
+		}
 	}
 
-void AriacSensorManager::binlogicalCameraCallback1(const osrf_gear::LogicalCameraImage::ConstPtr & image_msg ){
+	//    //call pick part to pick that part
+	//
+	//
+	//    // if attached take it to quality camera
+	//
+	//    //if attached and if no faulty part  deliver it to agv end pose
+	//
+	//
+	//    //if faulty deliver it to trash bin
+	//}
+	//// if all order part of bin belt picked then send agv and end competition
+	//
+	//
+}
 
+void AriacSensorManager::binlogicalCameraCallback1
+(const osrf_gear::LogicalCameraImage::ConstPtr & image_msg ) {
 	binlogicalCameraCallback(image_msg, "cam1");
 }
-void AriacSensorManager::binlogicalCameraCallback2(const osrf_gear::LogicalCameraImage::ConstPtr & image_msg){
+
+void AriacSensorManager::binlogicalCameraCallback2
+(const osrf_gear::LogicalCameraImage::ConstPtr & image_msg) {
 	binlogicalCameraCallback(image_msg, "cam2");
 }
 
-void AriacSensorManager::binlogicalCameraCallback(const osrf_gear::LogicalCameraImage::ConstPtr & image_msg, std::string cam_name){
-//// all bin part is empty fill the all bin part for segregate purpose
-//    setAllBinParts(image_msg);
-//// if all order part of conveyor belt picked then
-//if (conveyor_parts_picked) {
-//
-//	auto bin_order = order_manager_.getBinOrderParts();
-//	for(auto map_it = bin_order.begin(); map_it != bin_order.end(); map_it++){
-//		for(auto it = map_it->second.begin(); it != map_it->second.end(); it++){
-//			auto current_pose = it->getCurrentPose();
-//            order_manager_.pickPart(current_pose, 0);
-//		}
-//	}
-//    //call pick part to pick that part
-//
-//
-//    // if attached take it to quality camera
-//
-//    //if attached and if no faulty part  deliver it to agv end pose
-//
-//
-//    //if faulty deliver it to trash bin
-//}
-//// if all order part of bin belt picked then send agv and end competition
-//
-//
-}
-
-
-void AriacSensorManager::setAllBinParts(const osrf_gear::LogicalCameraImage::ConstPtr & image_msg, std::string cam_name){
-    auto sensor_pose = image_msg->pose;
-    auto current_time = ros::Time::now();
-    tf2_ros::TransformListener tfListener(tfBuffer);
-
-
-    transformStamped1.header.stamp = current_time;
-    transformStamped1.header.frame_id = "world";
-    transformStamped1.child_frame_id = "logical_sensor";
-
-    transformStamped2.header.stamp = current_time;
-    transformStamped2.header.frame_id = "logical_sensor";
-    transformStamped2.child_frame_id = "logical_sensor_child";
-
-    setPose(sensor_pose,transformStamped1);
-    br_w_s.sendTransform(transformStamped1);
-    ros::Duration(0.001).sleep();
-    if(all_binParts.count(cam_name) == 1) {
-    all_binParts[cam_name].clear();
-    }
-    for(auto it =image_msg->models.begin(); it!=image_msg->models.end();++it) {
-        setPose( it->pose, transformStamped2);
-        br_s_c.sendTransform(transformStamped2);
-        ros::Duration(0.001).sleep();
-        auto partType = it->type;
-        try{
-            transformStamped3 = tfBuffer.lookupTransform("world", "logical_sensor_child",
-                                                         ros::Time(0));
-            geometry_msgs::Pose pose;
-            setPose(transformStamped3, pose);
-            all_binParts[cam_name][partType].push_back(pose);
-
-        }
-        catch (tf2::TransformException &ex) {
-            ROS_WARN("exception");
-            ROS_WARN("%s",ex.what());
-            ros::Duration(0.001).sleep();
-        }
-
-
-    }
-    order_manager_.setBinCameraCalled();
+void AriacSensorManager::agvlogicalCameraCallback(const osrf_gear::LogicalCameraImage::ConstPtr &){
 
 }
 
+void AriacSensorManager::setAllBinParts(const osrf_gear::LogicalCameraImage::ConstPtr & image_msg, std::string cam_name) {
+	auto sensor_pose = image_msg->pose;
+	auto current_time = ros::Time::now();
+	tf2_ros::TransformListener tfListener(tfBuffer);
+	transformStamped1.header.stamp = current_time;
+	transformStamped1.header.frame_id = "world";
+	transformStamped1.child_frame_id = "logical_sensor";
 
-bool AriacSensorManager::isObjectDetected() {
-	return object_detected;
-}
+	transformStamped2.header.stamp = current_time;
+	transformStamped2.header.frame_id = "logical_sensor";
+	transformStamped2.child_frame_id = "logical_sensor_child";
 
-
-
-void AriacSensorManager::breakBeamCallback(const osrf_gear::Proximity::ConstPtr & msg) {
-
-	if (msg->object_detected) {  // If there is an object in proximity.
-		ROS_INFO("Break beam triggered.");
-		object_detected = true;
+	setPose(sensor_pose,transformStamped1);
+	br_w_s.sendTransform(transformStamped1);
+	ros::Duration(0.001).sleep();
+	if(all_binParts.count(cam_name) == 1) {
+		all_binParts[cam_name].clear();
 	}
-	else{
-		object_detected = false;
+	for(auto it =image_msg->models.begin(); it!=image_msg->models.end();++it) {
+		setPose( it->pose, transformStamped2);
+		br_s_c.sendTransform(transformStamped2);
+		ros::Duration(0.001).sleep();
+		auto partType = it->type;
+		try {
+			transformStamped3 = tfBuffer.lookupTransform("world", "logical_sensor_child",
+					ros::Time(0));
+		}
+		catch (tf2::TransformException &ex) {
+			ROS_WARN("exception");
+			ROS_WARN("%s",ex.what());
+			ros::Duration(0.001).sleep();
+		}
+		geometry_msgs::Pose pose;
+		setPose(transformStamped3, pose);
+		all_binParts[cam_name][partType].push_back(pose);
+
 	}
+	order_manager_.setBinCameraCalled();
+
 }
 
+void AriacSensorManager::qualityControlSensorCallback
+(const osrf_gear::LogicalCameraImage::ConstPtr &image_msg) {
+	is_faulty = !image_msg->models.empty();
+}
 
-
+void AriacSensorManager::dropInAGV(const geometry_msgs::Pose& end_pose){
+	order_manager_.getArmObject()->GoToTarget(end_pose);
+	order_manager_.getArmObject()->GripperToggle(false);
+	ros::Duration(0.05).sleep();
+}
 
 

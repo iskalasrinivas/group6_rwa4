@@ -39,7 +39,7 @@
  *OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GROUP6_RWA4_SENSOR
+#ifndef GROUP6_RWA4_SENSOR_H_
 #define GROUP6_RWA4_SENSOR
 #include <ariac_order_part.h>
 #include <list>
@@ -59,7 +59,8 @@
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <osrf_gear/LogicalCameraImage.h>
 #include <osrf_gear/Proximity.h>
-#include "order_manager.h"
+
+#include <order_manager.h>
 
 
 // class AriacOrderManager;
@@ -68,7 +69,7 @@ class AriacSensorManager {
 
 
 private:
-    std::map<std::string, std::map<std::string, std::vector<geometry_msgs::Pose>>> all_binParts;
+	std::map<std::string, std::map<std::string, std::vector<geometry_msgs::Pose>>> all_binParts;
 	AriacOrderManager order_manager_ ;
 	ros::NodeHandle sensor_nh_;
 
@@ -76,37 +77,41 @@ private:
 	ros::Subscriber camera_4_subscriber_;
 	ros::Subscriber camera_5_subscriber_;
 	ros::Subscriber breakbeam_subscriber;
-    ros::Subscriber quality_control_camera_subscriber_;
+	ros::Subscriber quality_control_camera_subscriber_;
 
 	geometry_msgs::TransformStamped transformStamped1;
 	geometry_msgs::TransformStamped transformStamped2;
 	geometry_msgs::TransformStamped transformStamped3;
+	osrf_gear::Model* tracking_part_;
+	geometry_msgs::Pose tracking_pose_in_sensor;
 	tf2_ros::Buffer tfBuffer;
 
-
+	AriacOrderPart* faulty_part_;
 
 	tf2_ros::TransformBroadcaster br_w_s;
 	tf2_ros::TransformBroadcaster br_s_c;
-	bool object_detected = false;
-	bool conveyor_parts_picked = false;
+	bool is_faulty;
 
 public:
 	AriacSensorManager();
 	~AriacSensorManager();
-	void setPose(const geometry_msgs::Pose pose, geometry_msgs::TransformStamped &);
-	void setPose(const geometry_msgs::Pose pose, geometry_msgs::Pose &);
-    void setPose(const geometry_msgs::TransformStamped transformStamped, geometry_msgs::Pose &pose);
-    std::map<std::string, std::map<std::string, std::vector<geometry_msgs::Pose>>> getBinParts();
-    void computeWorldTransformation(const osrf_gear::LogicalCameraImage::ConstPtr & image_msg);
+
+	void setPose(const geometry_msgs::Pose& , geometry_msgs::TransformStamped &);
+	void setPose(const geometry_msgs::Pose&, geometry_msgs::Pose &);
+	void setPose(const geometry_msgs::TransformStamped&, geometry_msgs::Pose &);
+
+	std::map<std::string, std::map<std::string, std::vector<geometry_msgs::Pose>>> getBinParts();
+
+	void computeWorldTransformation(const geometry_msgs::Pose &, const geometry_msgs::Pose & , geometry_msgs::Pose & );
+	void setTrackingPartInWorld();
 	void beltlogicalCameraCallback(const osrf_gear::LogicalCameraImage::ConstPtr &);
-	void binlogicalCameraCallback(const osrf_gear::LogicalCameraImage::ConstPtr &, std::string);
+	void updateFaultyPartPose(AriacOrderPart*);
+	void binlogicalCameraCallback(const osrf_gear::LogicalCameraImage::ConstPtr &, const std::string&);
 	void binlogicalCameraCallback1(const osrf_gear::LogicalCameraImage::ConstPtr &);
 	void binlogicalCameraCallback2(const osrf_gear::LogicalCameraImage::ConstPtr &);
 	void setAllBinParts(const osrf_gear::LogicalCameraImage::ConstPtr &, std::string);
-	void breakBeamCallback(const osrf_gear::Proximity::ConstPtr &);
-	bool isObjectDetected();
-	void qualityControlSensor1Callback(const osrf_gear::LogicalCameraImage::ConstPtr &);
-
+	void qualityControlSensorCallback(const osrf_gear::LogicalCameraImage::ConstPtr &);
+	void dropInAGV(const geometry_msgs::Pose&);
 };
 
 #endif //GROUP6_RWA4_SENSOR

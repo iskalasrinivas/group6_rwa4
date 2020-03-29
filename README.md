@@ -6,7 +6,7 @@ Build Instructions
 cd ~/catkin_ws/src
 unzip group6_rwa4.zip
 cd ..
-catkin_make --only-pkg-with-deps group6_rwa3
+catkin_make --only-pkg-with-deps group6_rwa4
  ```
  Run Instructions
 ...

@@ -221,6 +221,7 @@ void AriacSensorManager::binlogicalCameraCallback
 		const std::string& cam_name) {
 
 	setAllBinParts(image_msg, cam_name);
+	order_manager_.setBinCameraCalled();
 	updateFaultyPartPose(faulty_part_);
 	if (order_manager_.isConveyorPartsPicked()) {
 		auto bin_order = order_manager_.getBinOrderParts();

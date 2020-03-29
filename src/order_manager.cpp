@@ -46,7 +46,7 @@
 #include <ros/ros.h>
 #include <std_srvs/Trigger.h>
 #include <boost/optional.hpp>
-#include <../include/group6_rwa4/order_manager.h>
+#include <order_manager.h>
 
 
 //  AriacOrderManager::AriacOrderManager(): arm1_{"arm1"}, arm2_{"arm2"}
@@ -167,11 +167,13 @@ AriacOrderManager::AriacOrderManager(std::map<std::string, std::map<std::string,
 			}
 		}
     
-    void AriacOrderManager::setNewBinOrder(std::map<std::string, std::vector<AriacOrderPart>> 
-                                             *vec_it, AriacOrderPart* it){
-         auto update_bin_order = bin_order_parts(vec_it, bin_order_parts.end());
-                                              
-        
+    void AriacOrderManager::updateBinOrder(std::map<std::string, std::vector<AriacOrderPart>> 
+                                           ::iterator vec_it, std::vector<AriacOrderPart>::iterator it){                            
+         std::map<std::string, std::vector<AriacOrderPart>> update_bin_order (vec_it, bin_order_parts.end());
+         auto part_type = vec_it->first;
+         std::vector<AriacOrderPart> update_vector (it, update_bin_order[part_type].end());
+         update_bin_order[part_type] = update_vector;
+         bin_order_parts = update_bin_order;
     }
 
 		std::map<std::string,

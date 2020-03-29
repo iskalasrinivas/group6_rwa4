@@ -191,7 +191,7 @@ void AriacSensorManager::beltlogicalCameraCallback(const osrf_gear::LogicalCamer
 					orderbeltPart = &conveyor_order[tracking_part_->type].back();
 
 				}
-				dropInAGV(orderbeltPart->getEndPose);
+				dropInAGV(orderbeltPart->getEndPose());
 				order_manager_.removeConveyorPart(orderbeltPart);
 				tracking_part_ = nullptr;
 			}
@@ -202,10 +202,6 @@ void AriacSensorManager::beltlogicalCameraCallback(const osrf_gear::LogicalCamer
 	}
 }
 
-
-void AriacSensorManager::setNewCurrentPose(AriacOrderPart *order_bin_part){
-	auto current_pose = order_bin_part->getCurrentPose();
-}
 
 void AriacSensorManager::updateFaultyPartPose(AriacOrderPart* part){
 	if(faulty_part_ != nullptr){
@@ -236,32 +232,17 @@ void AriacSensorManager::binlogicalCameraCallback
 				if(order_manager_.getArmObject()->isAtQualitySensor()) {
 					if(is_faulty) {
 						order_manager_.getArmObject()->dropInTrash();
-						setNewBinOrder(vec_it, it);
-						updateFaultyPartPose(it);
+						order_manager_.updateBinOrder(vec_it, it);
+						AriacOrderPart* part = &(*it);
+						updateFaultyPartPose(part);
 						return;
 					} else {
 						dropInAGV(end_pose);
 					}
 				}
-
-
 			}
 		}
 	}
-
-	//    //call pick part to pick that part
-	//
-	//
-	//    // if attached take it to quality camera
-	//
-	//    //if attached and if no faulty part  deliver it to agv end pose
-	//
-	//
-	//    //if faulty deliver it to trash bin
-	//}
-	//// if all order part of bin belt picked then send agv and end competition
-	//
-	//
 }
 
 void AriacSensorManager::binlogicalCameraCallback1
@@ -274,7 +255,7 @@ void AriacSensorManager::binlogicalCameraCallback2
 	binlogicalCameraCallback(image_msg, "cam2");
 }
 
-void AriacSensorManager::agvlogicalCameraCallback(const osrf_gear::LogicalCameraImage::ConstPtr &){
+void AriacSensorManager::agvLogicalCameraCallback(const osrf_gear::LogicalCameraImage::ConstPtr & image_msg){
 
 }
 
@@ -325,7 +306,7 @@ void AriacSensorManager::qualityControlSensorCallback
 }
 
 void AriacSensorManager::dropInAGV(const geometry_msgs::Pose& end_pose){
-	order_manager_.getArmObject()->GoToTarget(end_pose);
+	order_manager_.getArmObject()->GoToAGV(end_pose);
 	order_manager_.getArmObject()->GripperToggle(false);
 	ros::Duration(0.05).sleep();
 }

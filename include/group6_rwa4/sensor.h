@@ -111,7 +111,8 @@ public:
 	void binlogicalCameraCallback2(const osrf_gear::LogicalCameraImage::ConstPtr &);
 	void setAllBinParts(const osrf_gear::LogicalCameraImage::ConstPtr &, std::string);
 	void qualityControlSensorCallback(const osrf_gear::LogicalCameraImage::ConstPtr &);
-	void dropInAGV(const geometry_msgs::Pose&);
+	void agvLogicalCameraCallback(const osrf_gear::LogicalCameraImage::ConstPtr &);
+	void dropInAGV(const geometry_msgs::Pose &);
 };
 
-#endif //GROUP6_RWA4_SENSOR
+#endif // GROUP6_RWA4_SENSOR_H_

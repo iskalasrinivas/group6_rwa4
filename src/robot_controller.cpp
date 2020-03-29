@@ -227,6 +227,19 @@ void RobotController::GoToTarget(const geometry_msgs::Pose& pose) {
 	ROS_INFO_STREAM("Point reached...");
 }
 
+void RobotController::GoToAGV(const geometry_msgs::Pose& pose) {
+	ros::AsyncSpinner spinner(4);
+	robot_move_group_.setPoseTarget(pose);
+	spinner.start();
+	if (this->Planner()) {
+		ROS_INFO_STREAM("Point success");
+		robot_move_group_.move();
+		ros::Duration(0.02).sleep();
+	}
+	ROS_INFO_STREAM("Point reached...");
+}
+
+
 void RobotController::GripperToggle(const bool& state) {
 	gripper_service_.request.enable = state;
 	gripper_client_.call(gripper_service_);

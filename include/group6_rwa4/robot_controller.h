@@ -112,11 +112,12 @@ public:
 	void GoToTarget(std::vector<geometry_msgs::Pose> waypoints);
 	void GoToTarget(std::initializer_list<geometry_msgs::Pose>);
 	void GoToTarget(const geometry_msgs::Pose&);
+	void GoToAGV(const geometry_msgs::Pose&);
 
 //	bool DropPart(geometry_msgs::Pose);
 	void GripperToggle(const bool&);
 	void GripperCallback(const osrf_gear::VacuumGripperState::ConstPtr&);
-//	void GripperStateCheck(geometry_msgs::Pose);
+	void GripperStateCheck(geometry_msgs::Pose);
 //	bool PickPart(geometry_msgs::Pose&);
 	bool isPartAttached();
 	bool isAtQualitySensor();
@@ -125,9 +126,12 @@ public:
 
 	void GoToPose(const std::vector<double> &);
 	geometry_msgs::Pose getHomeCartPose();
+	void GotoTarget(const geometry_msgs::Pose&);
 
 	void SendRobotHome();
 	void dropInTrash();
 	void GoToQualityCamera();
+
+
 };
-#endif  // GROUP6_RWA4_ROBOT_CONTROLLER_H_
+#endif // GROUP6_RWA4_ROBOT_CONTROLLER_H_

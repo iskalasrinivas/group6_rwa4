@@ -57,12 +57,12 @@ int main(int argc, char **argv) {
 	async_spinner.start();
 
 //
-//	Competition mycompetition;
+	Competition mycompetition;
 //
 //	while(ros::ok()){
 //		ROS_INFO_STREAM("HELLO");
 //		std::cout << "OK";
-//		ros::waitForShutdown();
+	ros::waitForShutdown();
 //	}
 
 

@@ -55,6 +55,7 @@ AriacSensorManager::AriacSensorManager() : order_manager_(& all_binParts), is_fa
 					&AriacSensorManager::qualityControlSensorCallback, this);
 	tracking_part_ = new osrf_gear::Model();
 	tracking_part_ = nullptr;
+	faulty_part_ = nullptr;
 }
 
 AriacSensorManager::~AriacSensorManager() {}

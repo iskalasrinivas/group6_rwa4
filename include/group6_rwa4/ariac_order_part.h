@@ -42,12 +42,23 @@
 #define GROUP6_RWA4_ARIAC_ORDER_PART_H_
 #include <string>
 #include <geometry_msgs/Pose.h>
+#include <geometry_msgs/TransformStamped.h>
+#include <tf2_ros/transform_broadcaster.h>
+#include <tf2_ros/transform_listener.h>
 
 class AriacOrderPart {
  private:
 	std::string part_type_;
+	geometry_msgs::Pose tray_pose_;
 	geometry_msgs::Pose end_pose_;
 	geometry_msgs::Pose current_pose_;
+	std::string kit_tray;
+
+	geometry_msgs::TransformStamped tS_b_p;
+	geometry_msgs::TransformStamped tS_w_p;
+
+	tf2_ros::TransformBroadcaster br_s_c;
+	tf2_ros::Buffer tfBuffer;
 
  public:
 	AriacOrderPart(std::string, geometry_msgs::Pose);
@@ -55,10 +66,10 @@ class AriacOrderPart {
 
 
 	void setPartType(std::string);
-	void setEndPose(geometry_msgs::Pose);
 	void setCurrentPose(geometry_msgs::Pose);
 	const std::string getPartType();
 	const geometry_msgs::Pose getEndPose();
 	const geometry_msgs::Pose getCurrentPose();
+	void worldTransformation();
 };
 #endif  // GROUP6_RWA4_ARIAC_ORDER_PART_H_

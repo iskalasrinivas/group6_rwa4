@@ -41,16 +41,13 @@
 
 #include <ariac_order_part.h>
 
-AriacOrderPart::AriacOrderPart(std::string part_type, geometry_msgs::Pose e_pose):part_type_(part_type), end_pose_(e_pose) {}
+AriacOrderPart::AriacOrderPart(std::string part_type, geometry_msgs::Pose t_pose):part_type_(part_type), tray_pose_(t_pose) {
+	worldTransformation();
+}
 AriacOrderPart::~AriacOrderPart() {}
 
 void AriacOrderPart::setPartType(std::string part_type) {
 	part_type_ = part_type;
-}
-
-void AriacOrderPart::setEndPose(geometry_msgs::Pose part_pose) {
-	end_pose_ = part_pose;
-	end_pose_.position.z +=0.3;
 }
 
 void AriacOrderPart::setCurrentPose(geometry_msgs::Pose pose) {
@@ -68,3 +65,41 @@ const geometry_msgs::Pose AriacOrderPart::getEndPose() {
 const geometry_msgs::Pose AriacOrderPart::getCurrentPose() {
 	return current_pose_;
 }
+
+void AriacOrderPart::worldTransformation(){
+	auto current_time = ros::Time::now();
+	tf2_ros::TransformListener tfListener(tfBuffer);
+
+	tS_b_p.header.stamp = current_time;
+	tS_b_p.header.frame_id = "kit_tray_1";
+	tS_b_p.child_frame_id = "tray_bin_child";
+	tS_b_p.transform.translation.x = tray_pose_.position.x;
+	tS_b_p.transform.translation.y = tray_pose_.position.y;
+	tS_b_p.transform.translation.z = tray_pose_.position.z;
+	tS_b_p.transform.rotation.x = tray_pose_.orientation.x;
+	tS_b_p.transform.rotation.y = tray_pose_.orientation.y;
+	tS_b_p.transform.rotation.z = tray_pose_.orientation.z;
+	tS_b_p.transform.rotation.w = tray_pose_.orientation.w;
+	br_s_c.sendTransform(tS_b_p);
+	ros::Duration(0.001).sleep();
+	try {
+		tS_w_p = tfBuffer.lookupTransform
+				("world", "tray_bin_child",
+						ros::Time(0));
+	    end_pose_.position.x = tS_w_p.transform.translation.x;
+	    end_pose_.position.y = tS_w_p.transform.translation.y;
+	    end_pose_.position.z = tS_w_p.transform.translation.z;
+	    end_pose_.orientation.x = tS_w_p.transform.rotation.x;
+	    end_pose_.orientation.y = tS_w_p.transform.rotation.y;
+	    end_pose_.orientation.z = tS_w_p.transform.rotation.z;
+	    end_pose_.orientation.w = tS_w_p.transform.rotation.w;
+
+	}
+	catch (tf2::TransformException &ex) {
+		ROS_WARN("exception");
+		ROS_WARN("%s", ex.what());
+		ros::Duration(0.001).sleep();
+	}
+
+}
+

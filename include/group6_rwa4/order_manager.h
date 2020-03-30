@@ -91,7 +91,8 @@ private:
 
 public:
 	explicit AriacOrderManager(std::map<std::string,
-			std::map<std::string, std::vector<geometry_msgs::Pose>>>*);
+			std::map<std::string, std::vector<geometry_msgs::Pose>>>*,
+			std::map<std::string, std::vector<geometry_msgs::Pose>>*);
 	~AriacOrderManager();
 	void OrderCallback(const osrf_gear::Order::ConstPtr&);
 	void setOrderParts();

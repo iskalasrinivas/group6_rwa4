@@ -42,7 +42,7 @@
 #include <sensor.h>
 
 
-AriacSensorManager::AriacSensorManager() : order_manager_(& all_binParts), is_faulty(false) {
+AriacSensorManager::AriacSensorManager() : order_manager_(& all_binParts, &sorted_all_binParts), is_faulty(false) {
 	ROS_INFO_STREAM(">>>>> Subscribing to logical sensors");
 	ros::AsyncSpinner async_spinner(4);
 	async_spinner.start();
@@ -264,6 +264,7 @@ void AriacSensorManager::agvLogicalCameraCallback(const osrf_gear::LogicalCamera
 }
 
 void AriacSensorManager::SortAllBinParts() {
+	sorted_all_binParts.clear();
 	for(auto cam_id : all_binParts) {
 
 		for(auto map_parts : cam_id.second) {

@@ -50,8 +50,8 @@
 
 
 //  AriacOrderManager::AriacOrderManager(): arm1_{"arm1"}, arm2_{"arm2"}
-AriacOrderManager::AriacOrderManager(std::map<std::string, std::map<std::string, std::vector<geometry_msgs::Pose>>>* abp):
-arm1_{"arm1"}, all_bin_parts(abp),
+AriacOrderManager::AriacOrderManager(std::map<std::string, std::map<std::string, std::vector<geometry_msgs::Pose>>>* abp, std::map<std::string, std::vector<geometry_msgs::Pose>>* sabp):
+arm1_{"arm1"}, all_binParts(abp), sorted_all_binParts(sabp),
 isBinCameraCalled(false), part_is_faulty(false), task_pending(true), conveyor_parts_picked (false) {
 	ros::AsyncSpinner async_spinner(4);
 	async_spinner.start();
@@ -189,16 +189,18 @@ void AriacOrderManager::segregateOrders() {
 		auto part_type = orderPart.first;
 		auto oVecPart =  orderPart.second;
 		if(sorted_all_binParts->count(part_type)) {
-			if(sorted_all_binParts[part_type].size() >= orderPart.second.size()) {
+			if((*sorted_all_binParts)[part_type].size() >= orderPart.second.size()) {
 				setCurrentPose(oVecPart, (*sorted_all_binParts)[part_type]);
 				bin_order_parts.insert({part_type, oVecPart});
 			} else {
-				ROS_INFO_STREAM("Not sufficient Parts !!");
+				ROS_INFO_STREAM("Sufficient Parts not available on bin lesser parts:have to be coded !!");
 			}
 		} else {
 			conveyor_order_parts.insert({part_type, oVecPart});
 		}
 	}
+
+
 	for (auto it1_part : bin_order_parts) {
 		ROS_INFO_STREAM("From Bin :  Type of Part " << it1_part.first << " Num of Parts "<< it1_part.second.size()<<std::endl);
 	}

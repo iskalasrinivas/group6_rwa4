@@ -41,6 +41,9 @@
 
 #include <ariac_order_part.h>
 
+AriacOrderPart::AriacOrderPart(const AriacOrderPart& aop) {
+}
+
 AriacOrderPart::AriacOrderPart(std::string part_type, geometry_msgs::Pose t_pose):part_type_(part_type), tray_pose_(t_pose) {
 	worldTransformation();
 }
@@ -65,8 +68,15 @@ const geometry_msgs::Pose AriacOrderPart::getEndPose() {
 const geometry_msgs::Pose AriacOrderPart::getCurrentPose() {
 	return current_pose_;
 }
-
+//
 void AriacOrderPart::worldTransformation(){
+std::string kit_tray;
+
+	geometry_msgs::TransformStamped tS_b_p;
+	geometry_msgs::TransformStamped tS_w_p;
+
+
+	tf2_ros::Buffer tfBuffer;
 	auto current_time = ros::Time::now();
 	tf2_ros::TransformListener tfListener(tfBuffer);
 

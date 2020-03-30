@@ -194,12 +194,14 @@ void AriacSensorManager::beltlogicalCameraCallback(const osrf_gear::LogicalCamer
 
 	if (tracking_part_ != nullptr) {
 		ROS_INFO_STREAM(">> tracking_part_ is not null" );
-		order_manager_.pickPart(tracking_part_->pose, 0.2);
+		order_manager_.pickPart(tracking_part_->pose, 0.1);
 		if(order_manager_.getArmObject()->isAtQualitySensor()) {
 			if(is_faulty) {
+				ROS_WARN_STREAM("Part is faulty");
 				order_manager_.getArmObject()->dropInTrash();
 				tracking_part_ = nullptr;
 			} else {
+				ROS_WARN_STREAM("Part is not faulty");
 				AriacOrderPart* orderbeltPart;
 				if(conveyor_order.count(tracking_part_->type)){
 					orderbeltPart = &conveyor_order[tracking_part_->type].back();

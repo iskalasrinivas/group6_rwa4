@@ -111,8 +111,8 @@ public:
 	void setBinCameraCalled();
 	void updateBinOrder(std::map<std::string, std::vector<AriacOrderPart>>::iterator, std::vector<AriacOrderPart>::iterator);
 	bool inVicinity(const geometry_msgs::Pose&);
-	void transformAndPickPart(const geometry_msgs::TransformStamped& , int);
-	void pickPart(geometry_msgs::Pose, int);
+	void transformAndPickPart(const geometry_msgs::TransformStamped& , double);
+	void pickPart(geometry_msgs::Pose, double);
 	void setConveyorPartsPicked(const bool & );
 	bool isConveyorPartsPicked();
 	bool isSegregated();

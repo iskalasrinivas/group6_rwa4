@@ -19,7 +19,7 @@ source devel/setup.bash
 
 3. Run following commands in new terminals:
  ```
-roslaunch group6_rwa4 group6-rwa4.launch
+roslaunch group6_rwa4 group6_rwa4.launch
 roslaunch ur10_moveit_config move_group.launch arm_namespace:=/ariac/arm1
 rosrun group6_rwa4 main_node
 ```

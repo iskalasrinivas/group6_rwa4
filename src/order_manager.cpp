@@ -273,7 +273,7 @@ bool AriacOrderManager::inVicinity(const geometry_msgs::Pose& world_part_pose) {
 }
 
 void AriacOrderManager::transformAndPickPart
-(const geometry_msgs::TransformStamped& world_msg, int y) {
+(const geometry_msgs::TransformStamped& world_msg, double y) {
 	if (task_pending) {
 		ROS_INFO("robot_controller_pathPlanning");
 		geometry_msgs::Pose world_part_pose;
@@ -290,14 +290,23 @@ void AriacOrderManager::transformAndPickPart
 	}
 }
 
-void AriacOrderManager::pickPart(geometry_msgs::Pose world_part_pose, int y) {
+void AriacOrderManager::pickPart(geometry_msgs::Pose world_part_pose, double y) {
 	if (!arm1_.isPartAttached()) {
         world_part_pose.position.z += 0.02;
 		world_part_pose.position.y -= y; 
 		arm1_.GoToTarget(world_part_pose);
 		if (inVicinity(world_part_pose)) {
-			ROS_INFO_STREAM("Gripper toggled");
+			ROS_WARN_STREAM("Gripper toggled");
 			arm1_.GripperToggle(true);
+			while (!arm1_.isPartAttached()) {
+				world_part_pose.position.z += 0.02;
+				world_part_pose.position.y -= 2*y;
+				arm1_.GoToTarget(world_part_pose);
+				world_part_pose.position.z -= 0.02;
+				world_part_pose.position.y -= 2*y;
+				arm1_.GoToTarget(world_part_pose);
+			}
+
 			world_part_pose.position.z += 0.2;
 			world_part_pose.position.y -= y;
 			arm1_.GoToTarget(world_part_pose);

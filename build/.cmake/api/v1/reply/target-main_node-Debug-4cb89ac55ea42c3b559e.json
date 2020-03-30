@@ -1,0 +1,673 @@
+{
+	"artifacts" : 
+	[
+		{
+			"path" : "devel/lib/group6_rwa4/main_node"
+		}
+	],
+	"backtrace" : 1,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_executable",
+			"_install",
+			"install",
+			"add_dependencies",
+			"include_directories",
+			"add_definitions",
+			"include",
+			"find_package",
+			"configure_shared_library_build_settings"
+		],
+		"files" : 
+		[
+			"CMakeLists.txt",
+			"/opt/ros/melodic/share/catkin/cmake/custom_install.cmake",
+			"/opt/ros/melodic/share/rosconsole/cmake/rosconsole-extras.cmake",
+			"/opt/ros/melodic/share/rosconsole/cmake/rosconsoleConfig.cmake",
+			"/opt/ros/melodic/share/roscpp/cmake/roscppConfig.cmake",
+			"/opt/ros/melodic/share/actionlib/cmake/actionlibConfig.cmake",
+			"/opt/ros/melodic/share/moveit_ros_planning_interface/cmake/moveit_ros_planning_interfaceConfig.cmake",
+			"/opt/ros/melodic/share/catkin/cmake/catkinConfig.cmake",
+			"/opt/ros/melodic/share/catkin/cmake/tools/libraries.cmake",
+			"/opt/ros/melodic/share/catkin/cmake/all.cmake"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 55,
+				"parent" : 0
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 72,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 13,
+				"parent" : 2
+			},
+			{
+				"command" : 3,
+				"file" : 0,
+				"line" : 60,
+				"parent" : 0
+			},
+			{
+				"command" : 4,
+				"file" : 0,
+				"line" : 48,
+				"parent" : 0
+			},
+			{
+				"command" : 7,
+				"file" : 0,
+				"line" : 10,
+				"parent" : 0
+			},
+			{
+				"file" : 7,
+				"parent" : 6
+			},
+			{
+				"command" : 7,
+				"file" : 7,
+				"line" : 76,
+				"parent" : 7
+			},
+			{
+				"file" : 6,
+				"parent" : 8
+			},
+			{
+				"command" : 7,
+				"file" : 6,
+				"line" : 197,
+				"parent" : 9
+			},
+			{
+				"file" : 5,
+				"parent" : 10
+			},
+			{
+				"command" : 7,
+				"file" : 5,
+				"line" : 197,
+				"parent" : 11
+			},
+			{
+				"file" : 4,
+				"parent" : 12
+			},
+			{
+				"command" : 7,
+				"file" : 4,
+				"line" : 197,
+				"parent" : 13
+			},
+			{
+				"file" : 3,
+				"parent" : 14
+			},
+			{
+				"command" : 6,
+				"file" : 3,
+				"line" : 222,
+				"parent" : 15
+			},
+			{
+				"file" : 2,
+				"parent" : 16
+			},
+			{
+				"command" : 5,
+				"file" : 2,
+				"line" : 12,
+				"parent" : 17
+			},
+			{
+				"command" : 6,
+				"file" : 7,
+				"line" : 20,
+				"parent" : 7
+			},
+			{
+				"file" : 9,
+				"parent" : 19
+			},
+			{
+				"command" : 8,
+				"file" : 9,
+				"line" : 174,
+				"parent" : 20
+			},
+			{
+				"command" : 5,
+				"file" : 8,
+				"line" : 18,
+				"parent" : 21
+			},
+			{
+				"command" : 5,
+				"file" : 2,
+				"line" : 8,
+				"parent" : 17
+			}
+		]
+	},
+	"compileGroups" : 
+	[
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : "-g   -std=c++14"
+				}
+			],
+			"defines" : 
+			[
+				{
+					"backtrace" : 18,
+					"define" : "ROSCONSOLE_BACKEND_LOG4CXX"
+				},
+				{
+					"backtrace" : 22,
+					"define" : "ROS_BUILD_SHARED_LIBS=1"
+				},
+				{
+					"backtrace" : 23,
+					"define" : "ROS_PACKAGE_NAME=\"group6_rwa4\""
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 5,
+					"path" : "/home/saurav/catkin_ws/src/group6_rwa4/include/group6_rwa4"
+				},
+				{
+					"backtrace" : 5,
+					"path" : "/opt/ros/melodic/include"
+				},
+				{
+					"backtrace" : 5,
+					"path" : "/opt/ros/melodic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp"
+				},
+				{
+					"backtrace" : 5,
+					"path" : "/opt/ros/melodic/share/orocos_kdl/cmake/../../../include"
+				},
+				{
+					"backtrace" : 5,
+					"path" : "/usr/include/eigen3"
+				}
+			],
+			"language" : "CXX",
+			"sourceIndexes" : 
+			[
+				0,
+				1,
+				2,
+				3,
+				4,
+				5
+			]
+		}
+	],
+	"dependencies" : 
+	[
+		{
+			"backtrace" : 4,
+			"id" : "std_msgs_generate_messages_nodejs::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "rosgraph_msgs_generate_messages_cpp::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "object_recognition_msgs_generate_messages_lisp::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "actionlib_msgs_generate_messages_cpp::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "sensor_msgs_generate_messages_eus::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "visualization_msgs_generate_messages_nodejs::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "visualization_msgs_generate_messages_cpp::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "shape_msgs_generate_messages_lisp::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "geometry_msgs_generate_messages_cpp::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "std_srvs_generate_messages_eus::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "tf_generate_messages_cpp::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "actionlib_msgs_generate_messages_eus::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "actionlib_generate_messages_lisp::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "visualization_msgs_generate_messages_py::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "shape_msgs_generate_messages_py::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "roscpp_generate_messages_cpp::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "shape_msgs_generate_messages_nodejs::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "actionlib_msgs_generate_messages_py::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "geometry_msgs_generate_messages_nodejs::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "geometry_msgs_generate_messages_eus::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "rosgraph_msgs_generate_messages_eus::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "std_msgs_generate_messages_py::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "actionlib_msgs_generate_messages_nodejs::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "rosgraph_msgs_generate_messages_py::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "actionlib_generate_messages_cpp::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "roscpp_generate_messages_nodejs::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "sensor_msgs_generate_messages_py::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "roscpp_generate_messages_lisp::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "roscpp_generate_messages_py::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "object_recognition_msgs_generate_messages_cpp::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "octomap_msgs_generate_messages_eus::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "object_recognition_msgs_generate_messages_eus::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "object_recognition_msgs_generate_messages_nodejs::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "tf_generate_messages_py::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "octomap_msgs_generate_messages_cpp::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "octomap_msgs_generate_messages_lisp::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "octomap_msgs_generate_messages_py::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "tf2_msgs_generate_messages_cpp::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "tf2_msgs_generate_messages_eus::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "tf2_msgs_generate_messages_lisp::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "tf2_msgs_generate_messages_nodejs::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "moveit_ros_manipulation_gencfg::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "osrf_gear_generate_messages_cpp::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "osrf_gear_generate_messages_eus::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "std_srvs_generate_messages_cpp::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "tf_generate_messages_eus::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "std_msgs_generate_messages_lisp::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "std_srvs_generate_messages_py::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "tf_generate_messages_nodejs::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "std_msgs_generate_messages_eus::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "actionlib_generate_messages_eus::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "actionlib_generate_messages_py::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "osrf_gear_generate_messages_lisp::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "tf2_msgs_generate_messages_py::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "moveit_msgs_generate_messages_lisp::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "tf_generate_messages_lisp::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "moveit_msgs_generate_messages_nodejs::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "moveit_msgs_generate_messages_py::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "sensor_msgs_generate_messages_cpp::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "std_msgs_generate_messages_cpp::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "sensor_msgs_generate_messages_nodejs::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "osrf_gear_generate_messages_nodejs::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "trajectory_msgs_generate_messages_eus::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "trajectory_msgs_generate_messages_lisp::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "trajectory_msgs_generate_messages_nodejs::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "moveit_msgs_generate_messages_cpp::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "osrf_gear_generate_messages_py::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "trajectory_msgs_generate_messages_py::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "actionlib_generate_messages_nodejs::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "rosgraph_msgs_generate_messages_nodejs::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "moveit_msgs_generate_messages_eus::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "rosgraph_msgs_generate_messages_lisp::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "shape_msgs_generate_messages_cpp::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "std_srvs_generate_messages_nodejs::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "sensor_msgs_generate_messages_lisp::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "geometry_msgs_generate_messages_py::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "geometry_msgs_generate_messages_lisp::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "object_recognition_msgs_generate_messages_py::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "std_srvs_generate_messages_lisp::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "visualization_msgs_generate_messages_eus::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "actionlib_msgs_generate_messages_lisp::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "trajectory_msgs_generate_messages_cpp::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "octomap_msgs_generate_messages_nodejs::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "shape_msgs_generate_messages_eus::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "moveit_ros_planning_gencfg::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "visualization_msgs_generate_messages_lisp::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "roscpp_generate_messages_eus::@6890427a1f51a3e7e1df"
+		}
+	],
+	"id" : "main_node::@6890427a1f51a3e7e1df",
+	"install" : 
+	{
+		"destinations" : 
+		[
+			{
+				"backtrace" : 3,
+				"path" : "bin"
+			}
+		],
+		"prefix" : 
+		{
+			"path" : "/usr/local"
+		}
+	},
+	"link" : 
+	{
+		"commandFragments" : 
+		[
+			{
+				"fragment" : "-g",
+				"role" : "flags"
+			},
+			{
+				"fragment" : "-rdynamic",
+				"role" : "flags"
+			},
+			{
+				"fragment" : "-Wl,-rpath,/opt/ros/melodic/lib: /opt/ros/melodic/lib/libmoveit_common_planning_interface_objects.so /opt/ros/melodic/lib/libmoveit_planning_scene_interface.so /opt/ros/melodic/lib/libmoveit_move_group_interface.so /opt/ros/melodic/lib/libmoveit_warehouse.so /opt/ros/melodic/lib/libwarehouse_ros.so /opt/ros/melodic/lib/libmoveit_pick_place_planner.so /opt/ros/melodic/lib/libmoveit_move_group_capabilities_base.so /opt/ros/melodic/lib/libmoveit_rdf_loader.so /opt/ros/melodic/lib/libmoveit_kinematics_plugin_loader.so /opt/ros/melodic/lib/libmoveit_robot_model_loader.so /opt/ros/melodic/lib/libmoveit_constraint_sampler_manager_loader.so /opt/ros/melodic/lib/libmoveit_planning_pipeline.so /opt/ros/melodic/lib/libmoveit_trajectory_execution_manager.so /opt/ros/melodic/lib/libmoveit_plan_execution.so /opt/ros/melodic/lib/libmoveit_planning_scene_monitor.so /opt/ros/melodic/lib/libmoveit_collision_plugin_loader.so /opt/ros/melodic/lib/libmoveit_lazy_free_space_updater.so /opt/ros/melodic/lib/libmoveit_point_containment_filter.so /opt/ros/melodic/lib/libmoveit_occupancy_map_monitor.so /opt/ros/melodic/lib/libmoveit_pointcloud_octomap_updater_core.so /opt/ros/melodic/lib/libmoveit_semantic_world.so /opt/ros/melodic/lib/libmoveit_exceptions.so /opt/ros/melodic/lib/libmoveit_background_processing.so /opt/ros/melodic/lib/libmoveit_kinematics_base.so /opt/ros/melodic/lib/libmoveit_robot_model.so /opt/ros/melodic/lib/libmoveit_transforms.so /opt/ros/melodic/lib/libmoveit_robot_state.so /opt/ros/melodic/lib/libmoveit_robot_trajectory.so /opt/ros/melodic/lib/libmoveit_planning_interface.so /opt/ros/melodic/lib/libmoveit_collision_detection.so /opt/ros/melodic/lib/libmoveit_collision_detection_fcl.so /opt/ros/melodic/lib/libmoveit_kinematic_constraints.so /opt/ros/melodic/lib/libmoveit_planning_scene.so /opt/ros/melodic/lib/libmoveit_constraint_samplers.so /opt/ros/melodic/lib/libmoveit_planning_request_adapter.so /opt/ros/melodic/lib/libmoveit_profiler.so /opt/ros/melodic/lib/libmoveit_trajectory_processing.so /opt/ros/melodic/lib/libmoveit_distance_field.so /opt/ros/melodic/lib/libmoveit_collision_distance_field.so /opt/ros/melodic/lib/libmoveit_kinematics_metrics.so /opt/ros/melodic/lib/libmoveit_dynamics_solver.so /opt/ros/melodic/lib/libmoveit_utils.so /opt/ros/melodic/lib/libmoveit_test_utils.so -lboost_iostreams -lfcl /opt/ros/melodic/lib/libgeometric_shapes.so /opt/ros/melodic/lib/liboctomap.so /opt/ros/melodic/lib/liboctomath.so /opt/ros/melodic/lib/libkdl_parser.so /opt/ros/melodic/lib/liburdf.so -lurdfdom_sensor -lurdfdom_model_state -lurdfdom_model -lurdfdom_world -ltinyxml /opt/ros/melodic/lib/librosconsole_bridge.so /opt/ros/melodic/lib/librandom_numbers.so /opt/ros/melodic/lib/libsrdfdom.so /opt/ros/melodic/lib/libimage_transport.so /opt/ros/melodic/lib/libclass_loader.so -lPocoFoundation -ldl /opt/ros/melodic/lib/libroslib.so /opt/ros/melodic/lib/librospack.so -lpython2.7 -lboost_program_options -ltinyxml2 /opt/ros/melodic/lib/liborocos-kdl.so /opt/ros/melodic/lib/liborocos-kdl.so.1.4.0 /opt/ros/melodic/lib/libtf.so /opt/ros/melodic/lib/libtf2_ros.so /opt/ros/melodic/lib/libactionlib.so /opt/ros/melodic/lib/libmessage_filters.so /opt/ros/melodic/lib/libtf2.so /opt/ros/melodic/lib/libroscpp.so -lboost_filesystem /opt/ros/melodic/lib/librosconsole.so /opt/ros/melodic/lib/librosconsole_log4cxx.so /opt/ros/melodic/lib/librosconsole_backend_interface.so -llog4cxx -lboost_regex /opt/ros/melodic/lib/libxmlrpcpp.so /opt/ros/melodic/lib/libroscpp_serialization.so /opt/ros/melodic/lib/librostime.so /opt/ros/melodic/lib/libcpp_common.so -lboost_system -lboost_thread -lboost_chrono -lboost_date_time -lboost_atomic -lpthread /usr/lib/x86_64-linux-gnu/libconsole_bridge.so.0.4",
+				"role" : "libraries"
+			}
+		],
+		"language" : "CXX"
+	},
+	"name" : "main_node",
+	"nameOnDisk" : "main_node",
+	"paths" : 
+	{
+		"build" : ".",
+		"source" : "."
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "Source Files",
+			"sourceIndexes" : 
+			[
+				0,
+				1,
+				2,
+				3,
+				4,
+				5
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "src/main.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "src/robot_controller.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "src/sensor.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "src/order_manager.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "src/competition.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "src/ariac_order_part.cpp",
+			"sourceGroupIndex" : 0
+		}
+	],
+	"type" : "EXECUTABLE"
+}

@@ -41,9 +41,6 @@
 
 #include <ariac_order_part.h>
 
-AriacOrderPart::AriacOrderPart(const AriacOrderPart& aop) {
-}
-
 AriacOrderPart::AriacOrderPart(std::string part_type, geometry_msgs::Pose t_pose):part_type_(part_type), tray_pose_(t_pose) {
 	worldTransformation();
 }
@@ -70,13 +67,13 @@ const geometry_msgs::Pose AriacOrderPart::getCurrentPose() {
 }
 //
 void AriacOrderPart::worldTransformation(){
-std::string kit_tray;
+	std::string kit_tray;
 
 	geometry_msgs::TransformStamped tS_b_p;
 	geometry_msgs::TransformStamped tS_w_p;
 
 
-	tf2_ros::Buffer tfBuffer;
+
 	auto current_time = ros::Time::now();
 	tf2_ros::TransformListener tfListener(tfBuffer);
 
@@ -91,25 +88,28 @@ std::string kit_tray;
 	tS_b_p.transform.rotation.z = tray_pose_.orientation.z;
 	tS_b_p.transform.rotation.w = tray_pose_.orientation.w;
 	br_s_c.sendTransform(tS_b_p);
-	ros::Duration(0.001).sleep();
+	ros::Duration(0.5).sleep();
 	try {
 		tS_w_p = tfBuffer.lookupTransform
-				("world", "tray_bin_child",
+				("world", "kit_tray_1",
 						ros::Time(0));
-	    end_pose_.position.x = tS_w_p.transform.translation.x;
-	    end_pose_.position.y = tS_w_p.transform.translation.y;
-	    end_pose_.position.z = tS_w_p.transform.translation.z;
-	    end_pose_.orientation.x = tS_w_p.transform.rotation.x;
-	    end_pose_.orientation.y = tS_w_p.transform.rotation.y;
-	    end_pose_.orientation.z = tS_w_p.transform.rotation.z;
-	    end_pose_.orientation.w = tS_w_p.transform.rotation.w;
+
 
 	}
 	catch (tf2::TransformException &ex) {
 		ROS_WARN("exception");
 		ROS_WARN("%s", ex.what());
-		ros::Duration(0.001).sleep();
+		ros::Duration(0.5).sleep();
 	}
+	ROS_WARN_STREAM("TRAY P POSE : " << tray_pose_.position.x << "  " << tray_pose_.position.y << "  " <<tray_pose_.position.z);
+	ROS_WARN_STREAM("END POSE : " << end_pose_.position.x << "  " << end_pose_.position.y << "  " <<end_pose_.position.z);
 
+	end_pose_.position.x = tS_w_p.transform.translation.x;
+	end_pose_.position.y = tS_w_p.transform.translation.y;
+	end_pose_.position.z = tS_w_p.transform.translation.z;
+	end_pose_.orientation.x = tS_w_p.transform.rotation.x;
+	end_pose_.orientation.y = tS_w_p.transform.rotation.y;
+	end_pose_.orientation.z = tS_w_p.transform.rotation.z;
+	end_pose_.orientation.w = tS_w_p.transform.rotation.w;
 }
 

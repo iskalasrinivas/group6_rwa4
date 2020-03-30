@@ -194,7 +194,7 @@ void AriacSensorManager::beltlogicalCameraCallback(const osrf_gear::LogicalCamer
 
 	if (tracking_part_ != nullptr) {
 		ROS_INFO_STREAM(">> tracking_part_ is not null" );
-		order_manager_.pickPart(tracking_part_->pose, 0.1);
+		order_manager_.pickPart(tracking_part_->pose, 0.12);
 		if(order_manager_.getArmObject()->isAtQualitySensor()) {
 			if(is_faulty) {
 				ROS_WARN_STREAM("Part is faulty");
@@ -203,18 +203,22 @@ void AriacSensorManager::beltlogicalCameraCallback(const osrf_gear::LogicalCamer
 			} else {
 				ROS_WARN_STREAM("Part is not faulty");
 				AriacOrderPart* orderbeltPart;
-				if(conveyor_order.count(tracking_part_->type)){
-					orderbeltPart = &conveyor_order[tracking_part_->type].back();
+//				if(conveyor_order.count(tracking_part_->type)){
+				orderbeltPart = conveyor_order[tracking_part_->type].back();
 
-				}
+//				}
+				ROS_WARN_STREAM("od type : " << orderbeltPart->getPartType());
+
+				ROS_WARN_STREAM("od: " << orderbeltPart->getEndPose().position.x << " " << orderbeltPart->getEndPose().position.y );
 				dropInAGV(orderbeltPart->getEndPose());
+
 				order_manager_.removeConveyorPart(orderbeltPart);
 				tracking_part_ = nullptr;
 			}
 		}
 	}
 	if(order_manager_.getConveyorOrderParts().size() == 0) {
-		ROS_INFO_STREAM("there are conveyor parts" );
+		ROS_INFO_STREAM("there are no conveyor parts" );
 		order_manager_.setConveyorPartsPicked(true);
 
 	}
@@ -249,8 +253,8 @@ void AriacSensorManager::binlogicalCameraCallback
 		ROS_INFO_STREAM(">> bin logical camera called." << conveyor_order.size());
 		for(auto vec_it = bin_order.begin(); vec_it != bin_order.end(); ++vec_it){
 			for(auto it = vec_it->second.begin(); it != vec_it->second.end(); ++it){
-				auto current_pose = it->getCurrentPose();
-				auto end_pose = it->getEndPose();
+				auto current_pose = (*it)->getCurrentPose();
+				auto end_pose = (*it)->getEndPose();
 				order_manager_.pickPart(current_pose, 0);
 				order_manager_.getArmObject()->GoToQualityCamera();
 				if(order_manager_.getArmObject()->isAtQualitySensor()) {
@@ -258,7 +262,7 @@ void AriacSensorManager::binlogicalCameraCallback
 						bin_part_faulty =true;
 						order_manager_.getArmObject()->dropInTrash();
 						order_manager_.updateBinOrder(vec_it, it);
-						AriacOrderPart* part = &(*it);
+						AriacOrderPart* part = (*it);
 						updateFaultyPartPose(part);
 						return;
 					} else {
@@ -335,6 +339,7 @@ void AriacSensorManager::setAllBinParts(const osrf_gear::LogicalCameraImage::Con
 		}
 		geometry_msgs::Pose pose;
 		setPose(transformStamped3, pose);
+		ROS_INFO_STREAM("BIN PART POSE : " << pose.position.x << "  " << pose.position.y << "  " <<pose.position.z);
 		all_binParts[cam_name][partType].push_back(pose);
 
 	}

@@ -98,11 +98,11 @@ void AriacOrderManager::setOrderParts() {
 			for (const auto &product : products) {
 				std::string part_type = product.type;
 				if (all_orderParts.count(part_type)) {
-					AriacOrderPart order_part(product.type, product.pose);
+					AriacOrderPart* order_part = new AriacOrderPart(product.type, product.pose);
 					all_orderParts[part_type].push_back(order_part);
 				} else {
-					AriacOrderPart order_part(product.type, product.pose);
-					std::vector<AriacOrderPart> vec;
+					AriacOrderPart* order_part = new AriacOrderPart(product.type, product.pose);
+					std::vector<AriacOrderPart*> vec;
 					vec.push_back(order_part);
 					all_orderParts[part_type] = vec;
 				}
@@ -140,12 +140,12 @@ ros::NodeHandle* AriacOrderManager::getnode() {
 }
 
 void AriacOrderManager::setCurrentPose
-(std::vector<AriacOrderPart> &ariacOrderparts,
+(std::vector<AriacOrderPart*> &ariacOrderparts,
 		const std::vector<geometry_msgs::Pose> &vecPose) {
 	std::vector<geometry_msgs::Pose>::const_iterator
 	it_vecPose = vecPose.begin();
 	for (auto &orderPart : ariacOrderparts) {
-		orderPart.setCurrentPose(*it_vecPose);
+		orderPart->setCurrentPose(*it_vecPose);
 		++it_vecPose;
 	}
 }
@@ -178,22 +178,22 @@ void AriacOrderManager::segregateOrders() {
 	}
 }
 
-void AriacOrderManager::updateBinOrder(std::map<std::string, std::vector<AriacOrderPart>>
-		::iterator vec_it, std::vector<AriacOrderPart>::iterator it){
-	std::map<std::string, std::vector<AriacOrderPart>> update_bin_order (vec_it, bin_order_parts.end());
+void AriacOrderManager::updateBinOrder(std::map<std::string, std::vector<AriacOrderPart*>>
+		::iterator vec_it, std::vector<AriacOrderPart*>::iterator it){
+	std::map<std::string, std::vector<AriacOrderPart*>> update_bin_order (vec_it, bin_order_parts.end());
 	auto part_type = vec_it->first;
-	std::vector<AriacOrderPart> update_vector (it, update_bin_order[part_type].end());
+	std::vector<AriacOrderPart*> update_vector (it, update_bin_order[part_type].end());
 	update_bin_order[part_type] = update_vector;
 	bin_order_parts = update_bin_order;
 }
 
 std::map<std::string,
-std::vector<AriacOrderPart>> AriacOrderManager::getBinOrderParts() {
+std::vector<AriacOrderPart*>> AriacOrderManager::getBinOrderParts() {
 	return bin_order_parts;
 }
 
 std::map<std::string,
-std::vector<AriacOrderPart>> AriacOrderManager::getConveyorOrderParts() {
+std::vector<AriacOrderPart*>> AriacOrderManager::getConveyorOrderParts() {
 	return conveyor_order_parts;
 }
 
@@ -299,13 +299,15 @@ void AriacOrderManager::pickPart(geometry_msgs::Pose world_part_pose, double y) 
 			ROS_WARN_STREAM("Gripper toggled");
 			arm1_.GripperToggle(true);
 			while (!arm1_.isPartAttached()) {
-				world_part_pose.position.z += 0.02;
+				ROS_WARN_STREAM("Part not attached");
+				world_part_pose.position.z += 0.004;
 				world_part_pose.position.y -= 2*y;
 				arm1_.GoToTarget(world_part_pose);
-				world_part_pose.position.z -= 0.02;
+				world_part_pose.position.z -= 0.004;
 				world_part_pose.position.y -= 2*y;
 				arm1_.GoToTarget(world_part_pose);
 			}
+			ROS_INFO_STREAM("Part attached");
 
 			world_part_pose.position.z += 0.2;
 			world_part_pose.position.y -= y;

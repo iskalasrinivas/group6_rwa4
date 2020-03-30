@@ -65,7 +65,7 @@ private:
 	ros::NodeHandle order_manager_nh_;
 	ros::Subscriber order_subscriber_;
 	std::vector<osrf_gear::Order> received_orders_;
-	vector<AriacOrderPart> part_manager;
+	vector<AriacOrderPart*> part_manager;
 	std::vector<std::string> product_type;
 	RobotController arm1_;
 	tf::TransformListener part_tf_listener_;
@@ -78,9 +78,9 @@ private:
 	std::map<std::string, std::vector<geometry_msgs::Pose>>>* all_binParts;
 	std::map<std::string, std::vector<geometry_msgs::Pose>>* sorted_all_binParts;
 
-	std::map<std::string, std::vector<AriacOrderPart>> all_orderParts;
-	std::map<std::string, std::vector<AriacOrderPart>> conveyor_order_parts;
-	std::map<std::string, std::vector<AriacOrderPart>> bin_order_parts;
+	std::map<std::string, std::vector<AriacOrderPart*>> all_orderParts;
+	std::map<std::string, std::vector<AriacOrderPart*>> conveyor_order_parts;
+	std::map<std::string, std::vector<AriacOrderPart*>> bin_order_parts;
 	bool task_pending;
 	bool isBinCameraCalled;
 	bool part_is_faulty;
@@ -97,11 +97,11 @@ public:
 	~AriacOrderManager();
 	void OrderCallback(const osrf_gear::Order::ConstPtr&);
 	void setOrderParts();
-	void setCurrentPose(std::vector<AriacOrderPart> &,
+	void setCurrentPose(std::vector<AriacOrderPart*> &,
 			const std::vector<geometry_msgs::Pose> &);
 	void segregateOrders();
-	std::map<std::string, std::vector<AriacOrderPart>> getBinOrderParts();
-	std::map<std::string, std::vector<AriacOrderPart>> getConveyorOrderParts();
+	std::map<std::string, std::vector<AriacOrderPart*>> getBinOrderParts();
+	std::map<std::string, std::vector<AriacOrderPart*>> getConveyorOrderParts();
 	void removeConveyorPart(AriacOrderPart*);
 	void removeBinPart(AriacOrderPart* orderPart);
 	void dropPartToAgv();
@@ -109,7 +109,7 @@ public:
 	void SubmitAGV(int);
 	ros::NodeHandle* getnode();
 	void setBinCameraCalled();
-	void updateBinOrder(std::map<std::string, std::vector<AriacOrderPart>>::iterator, std::vector<AriacOrderPart>::iterator);
+	void updateBinOrder(std::map<std::string, std::vector<AriacOrderPart*>>::iterator, std::vector<AriacOrderPart*>::iterator);
 	bool inVicinity(const geometry_msgs::Pose&);
 	void transformAndPickPart(const geometry_msgs::TransformStamped& , double);
 	void pickPart(geometry_msgs::Pose, double);

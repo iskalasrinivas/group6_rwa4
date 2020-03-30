@@ -52,10 +52,16 @@ class AriacOrderPart {
 	geometry_msgs::Pose tray_pose_;
 	geometry_msgs::Pose end_pose_;
 	geometry_msgs::Pose current_pose_;
+
+	tf2_ros::Buffer tfBuffer;
+
+	geometry_msgs::TransformStamped tS_b_p;
+	geometry_msgs::TransformStamped tS_w_p;
+
 	tf2_ros::TransformBroadcaster br_s_c;
 
  public:
-	AriacOrderPart(const AriacOrderPart&);
+
 	AriacOrderPart(std::string, geometry_msgs::Pose);
 	~AriacOrderPart();
 

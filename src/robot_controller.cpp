@@ -228,6 +228,7 @@ void RobotController::GoToTarget(const geometry_msgs::Pose& pose) {
 }
 
 void RobotController::GoToAGV(const geometry_msgs::Pose& pose) {
+	ROS_WARN_STREAM("placing in AGV HAHAHAHA	");
 	ros::AsyncSpinner spinner(4);
 	robot_move_group_.setPoseTarget(pose);
 	spinner.start();

@@ -70,6 +70,7 @@ class AriacSensorManager {
 
 private:
 	std::map<std::string, std::map<std::string, std::vector<geometry_msgs::Pose>>> all_binParts;
+	std::map<std::string, std::vector<geometry_msgs::Pose>> sorted_all_binParts;
 	AriacOrderManager order_manager_ ;
 	ros::NodeHandle sensor_nh_;
 
@@ -113,6 +114,7 @@ public:
 	void qualityControlSensorCallback(const osrf_gear::LogicalCameraImage::ConstPtr &);
 	void agvLogicalCameraCallback(const osrf_gear::LogicalCameraImage::ConstPtr &);
 	void dropInAGV(const geometry_msgs::Pose &);
+	void SortAllBinParts();
 };
 
 #endif // GROUP6_RWA4_SENSOR_H_

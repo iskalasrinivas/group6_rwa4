@@ -75,7 +75,9 @@ private:
 	osrf_gear::Order order_;
 
 	std::map<std::string,
-	std::map<std::string, std::vector<geometry_msgs::Pose>>>* all_bin_parts;
+	std::map<std::string, std::vector<geometry_msgs::Pose>>>* all_binParts;
+	std::map<std::string, std::vector<geometry_msgs::Pose>>* sorted_all_binParts;
+
 	std::map<std::string, std::vector<AriacOrderPart>> all_orderParts;
 	std::map<std::string, std::vector<AriacOrderPart>> conveyor_order_parts;
 	std::map<std::string, std::vector<AriacOrderPart>> bin_order_parts;

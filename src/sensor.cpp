@@ -44,6 +44,8 @@
 
 AriacSensorManager::AriacSensorManager() : order_manager_(& all_binParts), is_faulty(false) {
 	ROS_INFO_STREAM(">>>>> Subscribing to logical sensors");
+	ros::AsyncSpinner async_spinner(4);
+	async_spinner.start();
 	camera_1_subscriber_ = sensor_nh_.subscribe("/ariac/logical_camera_1", 10 ,
 			&AriacSensorManager::binlogicalCameraCallback1, this);
 	camera_4_subscriber_ = sensor_nh_.subscribe("/ariac/logical_camera_4", 10 ,
@@ -261,7 +263,23 @@ void AriacSensorManager::agvLogicalCameraCallback(const osrf_gear::LogicalCamera
 
 }
 
+void AriacSensorManager::SortAllBinParts() {
+	for(auto cam_id : all_binParts) {
+
+		for(auto map_parts : cam_id.second) {
+			auto part_type = map_parts.first;
+			auto vec_parts = map_parts.second;
+			if(sorted_all_binParts.count(part_type)) {
+				sorted_all_binParts[part_type].insert(sorted_all_binParts[part_type].end(), vec_parts.begin(), vec_parts.end() );
+			} else {
+				sorted_all_binParts[part_type] = vec_parts;
+			}
+		}
+	}
+}
+
 void AriacSensorManager::setAllBinParts(const osrf_gear::LogicalCameraImage::ConstPtr & image_msg, std::string cam_name) {
+	ROS_INFO_STREAM("setAllBinParts called");
 	auto sensor_pose = image_msg->pose;
 	auto current_time = ros::Time::now();
 	tf2_ros::TransformListener tfListener(tfBuffer);
@@ -298,9 +316,12 @@ void AriacSensorManager::setAllBinParts(const osrf_gear::LogicalCameraImage::Con
 		all_binParts[cam_name][partType].push_back(pose);
 
 	}
+	SortAllBinParts();
 	order_manager_.setBinCameraCalled();
 
 }
+
+
 
 void AriacSensorManager::qualityControlSensorCallback
 (const osrf_gear::LogicalCameraImage::ConstPtr &image_msg) {

@@ -149,43 +149,6 @@ void AriacOrderManager::setCurrentPose
 		++it_vecPose;
 	}
 }
-//
-//void AriacOrderManager::segregateOrders() {
-//	for (auto it_part : all_orderParts) {
-//		ROS_INFO_STREAM("segregate Orders Called ! Type of Part " << it_part.first << " Num of Parts "<< it_part.second.size()<<std::endl);
-//	}
-//	for (auto cam_it : *all_binParts) {
-//		for (auto part_it : cam_it.second) {
-//			ROS_INFO_STREAM("camera " << cam_it.first << " Part type "<< part_it.first<< " "<< part_it.second.size()<<std::endl);
-//		}
-//	}
-//	for (const auto &orderPart : all_orderParts) {
-//		for (const auto &binPart : *all_binParts) {
-//			auto oVecPart = orderPart.second;
-//			auto oType = orderPart.first;
-//			auto binMapPart = binPart.second;
-//			for (auto bPart : binMapPart) {
-//				if (oType == bPart.first && bPart.second.size() > oVecPart.size()) {
-//					setCurrentPose(oVecPart, bPart.second);
-//					bin_order_parts.insert({oType, oVecPart});
-//					// } else if(oType ==
-//					// bPart.first && bPart.second.size() < oVecPart.size()){
-//					// setCurrentPose(oVecPart, bPart.second);
-//					// bin_order_parts.insert({oType, oVecPart});
-//					// conveyor_order_parts.insert({oType, oVecPart});
-//				} else {
-//					conveyor_order_parts.insert({oType, oVecPart});
-//				}
-//			}
-//		}
-//	}
-//	for (auto it1_part : bin_order_parts) {
-//		ROS_INFO_STREAM("From Bin :  Type of Part " << it1_part.first << " Num of Parts "<< it1_part.second.size()<<std::endl);
-//	}
-//	for (auto it2_part : conveyor_order_parts) {
-//		ROS_INFO_STREAM("From Belt : Type of Part " << it2_part.first << " Num of Parts "<< it2_part.second.size()<<std::endl);
-//	}
-//}
 
 void AriacOrderManager::segregateOrders() {
 
@@ -329,22 +292,12 @@ void AriacOrderManager::transformAndPickPart
 
 void AriacOrderManager::pickPart(geometry_msgs::Pose world_part_pose, int y) {
 	if (!arm1_.isPartAttached()) {
-		//  ROS_INFO("part not attached");
-		//  ROS_INFO_STREAM(msg.transform.translation.x
-		//  <<","<< msg.transform.translation.y<<","<< msg.transform.translation.z);
         world_part_pose.position.z += 0.02;
 		world_part_pose.position.y -= y; 
 		arm1_.GoToTarget(world_part_pose);
-		//    ROS_INFO("going toward part");
-		//  ROS_INFO_STREAM("gap: "<<
-		//  arm1_.getHomeCartPose().position.z- world_part_pose.position.z << ","<<
-		// arm1_.getHomeCartPose().position.y- world_part_pose.position.y);
 		if (inVicinity(world_part_pose)) {
-			//      arm1_.GoToTarget(world_part_pose);
-			// arm1_.PickPart(world_part_pose);
 			ROS_INFO_STREAM("Gripper toggled");
 			arm1_.GripperToggle(true);
-			// ros::Duration(0.03).sleep();
 			world_part_pose.position.z += 0.2;
 			world_part_pose.position.y -= y;
 			arm1_.GoToTarget(world_part_pose);
@@ -390,4 +343,41 @@ RobotController* AriacOrderManager::getArmObject(){
 //    move_to_home_position();
 //
 //  }
+//}
+//
+//void AriacOrderManager::segregateOrders() {
+//	for (auto it_part : all_orderParts) {
+//		ROS_INFO_STREAM("segregate Orders Called ! Type of Part " << it_part.first << " Num of Parts "<< it_part.second.size()<<std::endl);
+//	}
+//	for (auto cam_it : *all_binParts) {
+//		for (auto part_it : cam_it.second) {
+//			ROS_INFO_STREAM("camera " << cam_it.first << " Part type "<< part_it.first<< " "<< part_it.second.size()<<std::endl);
+//		}
+//	}
+//	for (const auto &orderPart : all_orderParts) {
+//		for (const auto &binPart : *all_binParts) {
+//			auto oVecPart = orderPart.second;
+//			auto oType = orderPart.first;
+//			auto binMapPart = binPart.second;
+//			for (auto bPart : binMapPart) {
+//				if (oType == bPart.first && bPart.second.size() > oVecPart.size()) {
+//					setCurrentPose(oVecPart, bPart.second);
+//					bin_order_parts.insert({oType, oVecPart});
+//					// } else if(oType ==
+//					// bPart.first && bPart.second.size() < oVecPart.size()){
+//					// setCurrentPose(oVecPart, bPart.second);
+//					// bin_order_parts.insert({oType, oVecPart});
+//					// conveyor_order_parts.insert({oType, oVecPart});
+//				} else {
+//					conveyor_order_parts.insert({oType, oVecPart});
+//				}
+//			}
+//		}
+//	}
+//	for (auto it1_part : bin_order_parts) {
+//		ROS_INFO_STREAM("From Bin :  Type of Part " << it1_part.first << " Num of Parts "<< it1_part.second.size()<<std::endl);
+//	}
+//	for (auto it2_part : conveyor_order_parts) {
+//		ROS_INFO_STREAM("From Belt : Type of Part " << it2_part.first << " Num of Parts "<< it2_part.second.size()<<std::endl);
+//	}
 //}

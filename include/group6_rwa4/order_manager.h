@@ -117,7 +117,6 @@ public:
 	bool isConveyorPartsPicked();
 	bool isSegregated();
 	RobotController* getArmObject();
-	//  void pathplanning(const geometry_msgs::TransformStamped&);
 };
 
 #endif //  GROUP6_RWA4_ORDER_MANAGER_H_

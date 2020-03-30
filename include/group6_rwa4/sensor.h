@@ -92,6 +92,7 @@ private:
 	tf2_ros::TransformBroadcaster br_w_s;
 	tf2_ros::TransformBroadcaster br_s_c;
 	bool is_faulty;
+	bool bin_part_faulty;
 
 public:
 	AriacSensorManager();

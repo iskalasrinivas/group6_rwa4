@@ -52,7 +52,7 @@
 //  AriacOrderManager::AriacOrderManager(): arm1_{"arm1"}, arm2_{"arm2"}
 AriacOrderManager::AriacOrderManager(std::map<std::string, std::map<std::string, std::vector<geometry_msgs::Pose>>>* abp, std::map<std::string, std::vector<geometry_msgs::Pose>>* sabp):
 arm1_{"arm1"}, all_binParts(abp), sorted_all_binParts(sabp),
-isBinCameraCalled(false), part_is_faulty(false), task_pending(true), conveyor_parts_picked (false) {
+isBinCameraCalled(false), part_is_faulty(false), task_pending(true), conveyor_parts_picked (false), order_segregated(false){
 	ros::AsyncSpinner async_spinner(4);
 	async_spinner.start();
 	order_subscriber_ = order_manager_nh_.subscribe("/ariac/orders", 10,
@@ -78,6 +78,10 @@ void AriacOrderManager::OrderCallback
 
 void AriacOrderManager::setBinCameraCalled() {
 	isBinCameraCalled = true;
+}
+
+bool AriacOrderManager::isSegregated(){
+	return order_segregated;
 }
 
 
@@ -199,6 +203,8 @@ void AriacOrderManager::segregateOrders() {
 			conveyor_order_parts.insert({part_type, oVecPart});
 		}
 	}
+
+	order_segregated = true;
 
 
 	for (auto it1_part : bin_order_parts) {
@@ -326,6 +332,8 @@ void AriacOrderManager::pickPart(geometry_msgs::Pose world_part_pose, int y) {
 		//  ROS_INFO("part not attached");
 		//  ROS_INFO_STREAM(msg.transform.translation.x
 		//  <<","<< msg.transform.translation.y<<","<< msg.transform.translation.z);
+        world_part_pose.position.z += 0.02;
+		world_part_pose.position.y -= y; 
 		arm1_.GoToTarget(world_part_pose);
 		//    ROS_INFO("going toward part");
 		//  ROS_INFO_STREAM("gap: "<<
@@ -334,9 +342,11 @@ void AriacOrderManager::pickPart(geometry_msgs::Pose world_part_pose, int y) {
 		if (inVicinity(world_part_pose)) {
 			//      arm1_.GoToTarget(world_part_pose);
 			// arm1_.PickPart(world_part_pose);
+			ROS_INFO_STREAM("Gripper toggled");
 			arm1_.GripperToggle(true);
+			// ros::Duration(0.03).sleep();
 			world_part_pose.position.z += 0.2;
-			world_part_pose.position.y -= y;   // 0.5
+			world_part_pose.position.y -= y;
 			arm1_.GoToTarget(world_part_pose);
 		}
 	} else {

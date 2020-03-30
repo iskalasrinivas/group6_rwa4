@@ -85,6 +85,7 @@ private:
 	bool isBinCameraCalled;
 	bool part_is_faulty;
 	bool conveyor_parts_picked;
+	bool order_segregated;
 	geometry_msgs::Pose quality_control_camera_pose;
 	geometry_msgs::Pose faulty_bin_pose;
 	geometry_msgs::Pose agv_pose;
@@ -114,6 +115,7 @@ public:
 	void pickPart(geometry_msgs::Pose, int);
 	void setConveyorPartsPicked(const bool & );
 	bool isConveyorPartsPicked();
+	bool isSegregated();
 	RobotController* getArmObject();
 	//  void pathplanning(const geometry_msgs::TransformStamped&);
 };

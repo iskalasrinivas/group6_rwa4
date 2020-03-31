@@ -147,18 +147,31 @@ void AriacOrderManager::setCurrentPose
 	it_vecPose = vecPose.begin();
 	for (auto &orderPart : ariacOrderparts) {
 		orderPart->setCurrentPose(*it_vecPose);
-		++it_vecPose;
+		it_vecPose++;
+		ROS_WARN_STREAM( "order Type and Current Pose from bin"<<orderPart->getPartType() << " " << orderPart->getCurrentPose());
 	}
 }
+
+
 
 void AriacOrderManager::segregateOrders() {
 
 	for (const auto &orderPart : all_orderParts) {
 		auto part_type = orderPart.first;
+		ROS_ERROR_STREAM( "order PArt type"<< part_type);
 		auto oVecPart =  orderPart.second;
 		if(sorted_all_binParts->count(part_type)) {
-			if((*sorted_all_binParts)[part_type].size() >= orderPart.second.size()) {
-				setCurrentPose(oVecPart, (*sorted_all_binParts)[part_type]);
+			auto bin_vec = (*sorted_all_binParts)[part_type];
+			ROS_ERROR_STREAM( "order PArt type"<< bin_vec.front());
+			if(bin_vec.size() >= orderPart.second.size()) {
+				auto opart_it = oVecPart.begin();
+				auto bin_part = bin_vec.begin();
+
+				for(opart_it = oVecPart.begin(), bin_part = bin_vec.begin(); opart_it != oVecPart.end();++opart_it, ++bin_part) {
+					(*opart_it)->setCurrentPose(*bin_part);
+					ROS_WARN_STREAM( "order Type and Current Pose from bin"<<(*opart_it)->getPartType() << " " << (*opart_it)->getCurrentPose());
+				}
+//				setCurrentPose(oVecPart, (*sorted_all_binParts)[part_type]);
 				bin_order_parts.insert({part_type, oVecPart});
 			} else {
 				ROS_INFO_STREAM("Sufficient Parts not available on bin lesser parts:have to be coded !!");

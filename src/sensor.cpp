@@ -44,8 +44,8 @@
 
 AriacSensorManager::AriacSensorManager() : order_manager_(& all_binParts, &sorted_all_binParts), is_faulty(false), tfListener(tfBuffer) {
 	ROS_INFO_STREAM(">>>>> Subscribing to logical sensors");
-	ros::AsyncSpinner async_spinner(4);
-	async_spinner.start();
+//	ros::AsyncSpinner async_spinner(4);
+//	async_spinner.start();
 	camera_1_subscriber_ = sensor_nh_.subscribe("/ariac/logical_camera_1", 10 ,
 			&AriacSensorManager::binlogicalCameraCallback1, this);
 	camera_4_subscriber_ = sensor_nh_.subscribe("/ariac/logical_camera_4", 10 ,
@@ -258,6 +258,7 @@ void AriacSensorManager::binlogicalCameraCallback
 				auto current_pose = (*it)->getCurrentPose();
 				auto end_pose = (*it)->getEndPose();
 				ROS_INFO_STREAM(" Picking " << (*it)->getPartType() << " from bin.");
+				ROS_WARN_STREAM(" Picking Position " << (*it)->getCurrentPose().position.x << "  " << (*it)->getCurrentPose().position.y << " from bin.");
 				order_manager_.pickfromBin(current_pose);
 				ROS_INFO_STREAM(" Going to quality camera from bin");
 				order_manager_.getArmObject()->GoToQualityCamera();
@@ -310,6 +311,21 @@ void AriacSensorManager::SortAllBinParts() {
 			}
 		}
 	}
+//	for (auto it = sorted_all_binParts.begin(); it != sorted_all_binParts.end();++it) {
+//			ROS_WARN_STREAM("Sorted : " << it->first << it->second.size());
+//	}
+//	for (auto it = all_binParts["cam1"].begin(); it != all_binParts["cam1"].end();++it) {
+//		for (auto p = it->second.begin(); p != it->second.end();++p) {
+//			ROS_ERROR_STREAM("All parts cam1 : " << it->first << " "<< p->position.y);
+//
+//		}
+//	}
+//	for (auto it = all_binParts["cam2"].begin(); it != all_binParts["cam2"].end();++it) {
+//			for (auto p = it->second.begin(); p != it->second.end();++p) {
+//				ROS_ERROR_STREAM("All parts cam2 : " << it->first << " "<< p->position.y);
+//
+//			}
+//		}
 }
 
 void AriacSensorManager::setAllBinParts(const osrf_gear::LogicalCameraImage::ConstPtr & image_msg, std::string cam_name) {
@@ -319,10 +335,10 @@ void AriacSensorManager::setAllBinParts(const osrf_gear::LogicalCameraImage::Con
 
 	transformStamped1.header.stamp = current_time;
 	transformStamped1.header.frame_id = "world";
-	transformStamped1.child_frame_id = "logical_sensor";
+	transformStamped1.child_frame_id = cam_name;
 
 	transformStamped2.header.stamp = current_time;
-	transformStamped2.header.frame_id = "logical_sensor";
+	transformStamped2.header.frame_id = cam_name;
 	transformStamped2.child_frame_id = "logical_sensor_child";
 
 	setPose(sensor_pose,transformStamped1);
@@ -347,6 +363,7 @@ void AriacSensorManager::setAllBinParts(const osrf_gear::LogicalCameraImage::Con
 		}
 		geometry_msgs::Pose pose;
 		setPose(transformStamped3, pose);
+//		ROS_INFO_STREAM("Part Type" << it->type);
 //		ROS_INFO_STREAM("BIN PART POSE : " << pose.position.x << "  " << pose.position.y << "  " <<pose.position.z);
 		all_binParts[cam_name][partType].push_back(pose);
 

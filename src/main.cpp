@@ -53,8 +53,8 @@ int main(int argc, char **argv) {
 
 	ROS_INFO("Starting main function");
 	ros::init(argc, argv, "ariac_manager_node");
-	ros::AsyncSpinner async_spinner(4);
-	async_spinner.start();
+//	ros::AsyncSpinner async_spinner(4);
+//	async_spinner.start();
 
 //	ros::NodeHandle node_handler;
 //	ros::Duration(20).sleep();

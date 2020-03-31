@@ -353,7 +353,7 @@ void AriacOrderManager::pickfromBin(const geometry_msgs::Pose& part_pose) {
 	arm1_.GripperToggle(true);
 	if(!arm1_.isPartAttached()) {
 		while (!arm1_.isPartAttached()) {
-			target_pose.position.z -= 0.01;
+			target_pose.position.z -= 0.005;
 			arm1_.GoToTarget(target_pose);
 			ros::Duration(0.1).sleep();
 		}

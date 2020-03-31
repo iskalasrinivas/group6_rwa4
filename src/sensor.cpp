@@ -280,21 +280,21 @@ void AriacSensorManager::SortAllBinParts() {
 			}
 		}
 	}
-//	for (auto it = sorted_all_binParts.begin(); it != sorted_all_binParts.end();++it) {
-//			ROS_WARN_STREAM("Sorted : " << it->first << it->second.size());
-//	}
-//	for (auto it = all_binParts["cam1"].begin(); it != all_binParts["cam1"].end();++it) {
-//		for (auto p = it->second.begin(); p != it->second.end();++p) {
-//			ROS_ERROR_STREAM("All parts cam1 : " << it->first << " "<< p->position.y);
-//
-//		}
-//	}
-//	for (auto it = all_binParts["cam2"].begin(); it != all_binParts["cam2"].end();++it) {
-//			for (auto p = it->second.begin(); p != it->second.end();++p) {
-//				ROS_ERROR_STREAM("All parts cam2 : " << it->first << " "<< p->position.y);
-//
-//			}
-//		}
+	// for (auto it = sorted_all_binParts.begin(); it != sorted_all_binParts.end();++it) {
+	// 		ROS_WARN_STREAM("Sorted : " << it->first << it->second.size());
+	// }
+	// for (auto it = all_binParts["cam1"].begin(); it != all_binParts["cam1"].end();++it) {
+	// 	for (auto p = it->second.begin(); p != it->second.end();++p) {
+	// 		ROS_ERROR_STREAM("All parts cam1 : " << it->first << " "<< p->position.y);
+
+	// 	}
+	// }
+	// for (auto it = all_binParts["cam2"].begin(); it != all_binParts["cam2"].end();++it) {
+	// 		for (auto p = it->second.begin(); p != it->second.end();++p) {
+	// 			ROS_ERROR_STREAM("All parts cam2 : " << it->first << " "<< p->position.y);
+
+	// 		}
+	// 	}
 }
 
 void AriacSensorManager::setAllBinParts(const osrf_gear::LogicalCameraImage::ConstPtr & image_msg, std::string cam_name) {
@@ -331,7 +331,8 @@ void AriacSensorManager::setAllBinParts(const osrf_gear::LogicalCameraImage::Con
 
 	transformStamped2->header.stamp = current_time;
 	transformStamped2->header.frame_id = cam_name;
-	transformStamped2->child_frame_id = "logical_sensor_child";
+	auto child_string = cam_name + "logical_sensor_child";
+	transformStamped2->child_frame_id = child_string;
 
 	setPose(sensor_pose,transformStamped1);
 	br_w_s->sendTransform(*transformStamped1);
@@ -345,7 +346,7 @@ void AriacSensorManager::setAllBinParts(const osrf_gear::LogicalCameraImage::Con
 		ros::Duration(0.001).sleep();
 		auto partType = it->type;
 		try {
-			*transformStamped3 = tfBuffer->lookupTransform("world", "logical_sensor_child",
+			*transformStamped3 = tfBuffer->lookupTransform("world", child_string,
 					ros::Time(0));
 		}
 		catch (tf2::TransformException &ex) {

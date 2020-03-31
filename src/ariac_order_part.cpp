@@ -40,9 +40,16 @@
  */
 
 #include <ariac_order_part.h>
+#include <tf2_ros/transform_listener.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
-AriacOrderPart::AriacOrderPart(std::string part_type, geometry_msgs::Pose t_pose):part_type_(part_type), tray_pose_(t_pose) {
+AriacOrderPart::AriacOrderPart(std::string part_type, geometry_msgs::Pose t_pose):part_type_(part_type), tray_pose_(t_pose), tfListener(tfBuffer) {
+
+	ros::AsyncSpinner async_spinner(4);
+
+	async_spinner.start();
 	worldTransformation();
+	ROS_INFO_STREAM("Order object Created");
 }
 AriacOrderPart::~AriacOrderPart() {}
 
@@ -62,54 +69,90 @@ const geometry_msgs::Pose AriacOrderPart::getEndPose() {
 	return end_pose_;
 }
 
+const geometry_msgs::Pose AriacOrderPart::getTrayPose() {
+	return tray_pose_;
+}
+
 const geometry_msgs::Pose AriacOrderPart::getCurrentPose() {
 	return current_pose_;
 }
 //
+//void AriacOrderPart::worldTransformation(){
+////	std::string kit_tray;
+//
+//
+//
+//
+//
+//	auto current_time = ros::Time::now();
+//
+//
+//	tS_b_p.header.stamp = current_time;
+//	tS_b_p.header.frame_id = "kit_tray_1";
+//	tS_b_p.child_frame_id = "tray_bin_child";
+//	tS_b_p.transform.translation.x = tray_pose_.position.x;
+//	tS_b_p.transform.translation.y = tray_pose_.position.y;
+//	tS_b_p.transform.translation.z = tray_pose_.position.z;
+//	tS_b_p.transform.rotation.x = tray_pose_.orientation.x;
+//	tS_b_p.transform.rotation.y = tray_pose_.orientation.y;
+//	tS_b_p.transform.rotation.z = tray_pose_.orientation.z;
+//	tS_b_p.transform.rotation.w = tray_pose_.orientation.w;
+//	br_s_c.sendTransform(tS_b_p);
+//	ros::Duration(2.0).sleep();
+//	try {
+//		tS_w_p = tfBuffer.lookupTransform
+//				("world", "tray_bin_child",ros::Time(0));
+//
+//
+//	}
+//	catch (tf2::TransformException &ex) {
+//		ROS_WARN("exception");
+//		ROS_WARN("%s", ex.what());
+//		ros::Duration(2.0).sleep();
+//	}
+//	ros::Duration(2.0).sleep();
+//	ROS_ERROR_STREAM("TRAY P POSE : " << tray_pose_.position.x << "  " << tray_pose_.position.y << "  " <<tray_pose_.position.z);
+//	ROS_ERROR_STREAM("END POSE : " << end_pose_.position.x << "  " << end_pose_.position.y << "  " <<end_pose_.position.z);
+//
+//	end_pose_.position.x = tS_w_p.transform.translation.x;
+//	end_pose_.position.y = tS_w_p.transform.translation.y;
+//	end_pose_.position.z = tS_w_p.transform.translation.z;
+//	end_pose_.orientation.x = tS_w_p.transform.rotation.x;
+//	end_pose_.orientation.y = tS_w_p.transform.rotation.y;
+//	end_pose_.orientation.z = tS_w_p.transform.rotation.z;
+//	end_pose_.orientation.w = tS_w_p.transform.rotation.w;
+//}
+
 void AriacOrderPart::worldTransformation(){
-	std::string kit_tray;
 
-	geometry_msgs::TransformStamped tS_b_p;
-	geometry_msgs::TransformStamped tS_w_p;
+//	ros::Duration(2.0).sleep();
+	ros::Duration(2.0).sleep();
 
-
-
-	auto current_time = ros::Time::now();
-	tf2_ros::TransformListener tfListener(tfBuffer);
-
-	tS_b_p.header.stamp = current_time;
-	tS_b_p.header.frame_id = "kit_tray_1";
-	tS_b_p.child_frame_id = "tray_bin_child";
-	tS_b_p.transform.translation.x = tray_pose_.position.x;
-	tS_b_p.transform.translation.y = tray_pose_.position.y;
-	tS_b_p.transform.translation.z = tray_pose_.position.z;
-	tS_b_p.transform.rotation.x = tray_pose_.orientation.x;
-	tS_b_p.transform.rotation.y = tray_pose_.orientation.y;
-	tS_b_p.transform.rotation.z = tray_pose_.orientation.z;
-	tS_b_p.transform.rotation.w = tray_pose_.orientation.w;
-	br_s_c.sendTransform(tS_b_p);
-	ros::Duration(0.5).sleep();
 	try {
-		tS_w_p = tfBuffer.lookupTransform
-				("world", "kit_tray_1",
-						ros::Time(0));
+//		tS_w_b = tfBuffer.lookupTransform("world", "kit_tray_1",ros::Time(0));
+//						ros::Time::now(), ros::Duration(3.0));
 
-
+		tS_w_b = tfBuffer.lookupTransform("world", "kit_tray_1",ros::Time(0));
 	}
 	catch (tf2::TransformException &ex) {
 		ROS_WARN("exception");
 		ROS_WARN("%s", ex.what());
-		ros::Duration(0.5).sleep();
+//		ros::Duration(2.0).sleep();
 	}
-	ROS_WARN_STREAM("TRAY P POSE : " << tray_pose_.position.x << "  " << tray_pose_.position.y << "  " <<tray_pose_.position.z);
-	ROS_WARN_STREAM("END POSE : " << end_pose_.position.x << "  " << end_pose_.position.y << "  " <<end_pose_.position.z);
 
-	end_pose_.position.x = tS_w_p.transform.translation.x;
-	end_pose_.position.y = tS_w_p.transform.translation.y;
-	end_pose_.position.z = tS_w_p.transform.translation.z;
-	end_pose_.orientation.x = tS_w_p.transform.rotation.x;
-	end_pose_.orientation.y = tS_w_p.transform.rotation.y;
-	end_pose_.orientation.z = tS_w_p.transform.rotation.z;
-	end_pose_.orientation.w = tS_w_p.transform.rotation.w;
+	ros::Duration(2.0).sleep();
+
+	try{
+				tf2::doTransform(tray_pose_, end_pose_, tS_w_b);
+//				end_pose_ = tray_pose_;
+			}
+			catch (tf2::TransformException &ex) {
+					ROS_WARN("exception while converting child frame pose to world frame");
+			    	ROS_WARN("%s",ex.what());
+			        ros::Duration(0.01).sleep();
+			}
+	ros::Duration(2.0).sleep();
+	ROS_ERROR_STREAM("TRAY P POSE : " << tray_pose_.position.x << "  " << tray_pose_.position.y << "  " <<tray_pose_.position.z);
+	ROS_ERROR_STREAM("END POSE : " << end_pose_.position.x << "  " << end_pose_.position.y << "  " <<end_pose_.position.z);
 }
 

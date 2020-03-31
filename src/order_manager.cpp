@@ -99,6 +99,7 @@ void AriacOrderManager::setOrderParts() {
 				std::string part_type = product.type;
 				if (all_orderParts.count(part_type)) {
 					AriacOrderPart* order_part = new AriacOrderPart(product.type, product.pose);
+
 					all_orderParts[part_type].push_back(order_part);
 				} else {
 					AriacOrderPart* order_part = new AriacOrderPart(product.type, product.pose);

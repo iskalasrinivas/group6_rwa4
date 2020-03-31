@@ -154,7 +154,7 @@ void AriacSensorManager::setTrackingPartInWorld() {
 void AriacSensorManager::beltlogicalCameraCallback(const osrf_gear::LogicalCameraImage::ConstPtr & image_msg) {
   if(order_manager_.isSegregated()){
 	auto conveyor_order = order_manager_.getConveyorOrderParts();
-	ROS_INFO_STREAM(">> belt logical camera called." << conveyor_order.size());
+//	ROS_INFO_STREAM(">> belt logical camera called." << conveyor_order.size());
 	auto sensor_pose = image_msg->pose;
 	auto current_time = ros::Time::now();
 	tf2_ros::TransformListener tfListener(tfBuffer);
@@ -172,7 +172,7 @@ void AriacSensorManager::beltlogicalCameraCallback(const osrf_gear::LogicalCamer
 	ros::Duration(0.01).sleep();
 	for (auto it = image_msg->models.begin(); it != image_msg->models.end();++it) {
 		if (conveyor_order.count(it->type)) {
-			ROS_INFO_STREAM(">> belt logical camera saw. " << it->type );
+//			ROS_INFO_STREAM(">> belt logical camera saw. " << it->type );
 			auto part_type = it->type;
 			
 			if (tracking_part_ == nullptr) {
@@ -193,7 +193,7 @@ void AriacSensorManager::beltlogicalCameraCallback(const osrf_gear::LogicalCamer
 	}
 
 	if (tracking_part_ != nullptr) {
-		ROS_INFO_STREAM(">> tracking_part_ is not null" );
+//		ROS_INFO_STREAM(">> tracking_part_ is not null" );
 		order_manager_.pickPart(tracking_part_->pose, 0.12);
 		if(order_manager_.getArmObject()->isAtQualitySensor()) {
 			if(is_faulty) {
@@ -207,9 +207,9 @@ void AriacSensorManager::beltlogicalCameraCallback(const osrf_gear::LogicalCamer
 				orderbeltPart = conveyor_order[tracking_part_->type].back();
 
 //				}
-				ROS_WARN_STREAM("od type : " << orderbeltPart->getPartType());
-
-				ROS_WARN_STREAM("od: " << orderbeltPart->getEndPose().position.x << " " << orderbeltPart->getEndPose().position.y );
+				ROS_WARN_STREAM("Order type : " << orderbeltPart->getPartType());
+				ROS_ERROR_STREAM("End Pose of Order " << orderbeltPart->getTrayPose().position.x << " " << orderbeltPart->getTrayPose().position.y );
+				ROS_WARN_STREAM("End Pose of Order " << orderbeltPart->getEndPose().position.x << " " << orderbeltPart->getEndPose().position.y );
 				dropInAGV(orderbeltPart->getEndPose());
 
 				order_manager_.removeConveyorPart(orderbeltPart);
@@ -218,7 +218,7 @@ void AriacSensorManager::beltlogicalCameraCallback(const osrf_gear::LogicalCamer
 		}
 	}
 	if(order_manager_.getConveyorOrderParts().size() == 0) {
-		ROS_INFO_STREAM("there are no conveyor parts" );
+//		ROS_INFO_STREAM("there are no conveyor parts" );
 		order_manager_.setConveyorPartsPicked(true);
 
 	}
@@ -250,7 +250,7 @@ void AriacSensorManager::binlogicalCameraCallback
 	if (order_manager_.isConveyorPartsPicked()) {
 		auto bin_order = order_manager_.getBinOrderParts();
 		auto conveyor_order = order_manager_.getConveyorOrderParts();
-		ROS_INFO_STREAM(">> bin logical camera called." << conveyor_order.size());
+//		ROS_INFO_STREAM(">> bin logical camera called." << conveyor_order.size());
 		for(auto vec_it = bin_order.begin(); vec_it != bin_order.end(); ++vec_it){
 			for(auto it = vec_it->second.begin(); it != vec_it->second.end(); ++it){
 				auto current_pose = (*it)->getCurrentPose();
@@ -305,7 +305,7 @@ void AriacSensorManager::SortAllBinParts() {
 }
 
 void AriacSensorManager::setAllBinParts(const osrf_gear::LogicalCameraImage::ConstPtr & image_msg, std::string cam_name) {
-	ROS_INFO_STREAM("setAllBinParts called");
+//	ROS_INFO_STREAM("setAllBinParts called");
 	auto sensor_pose = image_msg->pose;
 	auto current_time = ros::Time::now();
 	tf2_ros::TransformListener tfListener(tfBuffer);
@@ -339,7 +339,7 @@ void AriacSensorManager::setAllBinParts(const osrf_gear::LogicalCameraImage::Con
 		}
 		geometry_msgs::Pose pose;
 		setPose(transformStamped3, pose);
-		ROS_INFO_STREAM("BIN PART POSE : " << pose.position.x << "  " << pose.position.y << "  " <<pose.position.z);
+//		ROS_INFO_STREAM("BIN PART POSE : " << pose.position.x << "  " << pose.position.y << "  " <<pose.position.z);
 		all_binParts[cam_name][partType].push_back(pose);
 
 	}

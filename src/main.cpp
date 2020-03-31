@@ -56,6 +56,9 @@ int main(int argc, char **argv) {
 	ros::AsyncSpinner async_spinner(4);
 	async_spinner.start();
 
+//	ros::NodeHandle node_handler;
+//	ros::Duration(20).sleep();
+
 //
 	Competition mycompetition;
 //

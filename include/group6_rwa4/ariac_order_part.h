@@ -55,8 +55,10 @@ class AriacOrderPart {
 
 	tf2_ros::Buffer tfBuffer;
 
+	tf2_ros::TransformListener tfListener;
 	geometry_msgs::TransformStamped tS_b_p;
 	geometry_msgs::TransformStamped tS_w_p;
+	geometry_msgs::TransformStamped tS_w_b;
 
 	tf2_ros::TransformBroadcaster br_s_c;
 
@@ -70,6 +72,7 @@ class AriacOrderPart {
 	void setCurrentPose(geometry_msgs::Pose);
 	const std::string getPartType();
 	const geometry_msgs::Pose getEndPose();
+	const geometry_msgs::Pose getTrayPose();
 	const geometry_msgs::Pose getCurrentPose();
 	void worldTransformation();
 };

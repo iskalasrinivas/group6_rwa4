@@ -116,6 +116,7 @@ public:
 	void setConveyorPartsPicked(const bool & );
 	bool isConveyorPartsPicked();
 	bool isSegregated();
+	void pickfromBin(const geometry_msgs::Pose&);
 	RobotController* getArmObject();
 };
 

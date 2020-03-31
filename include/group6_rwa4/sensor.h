@@ -86,7 +86,7 @@ private:
 	osrf_gear::Model* tracking_part_;
 	geometry_msgs::Pose tracking_pose_in_sensor;
 	tf2_ros::Buffer tfBuffer;
-
+	tf2_ros::TransformListener tfListener;
 	AriacOrderPart* faulty_part_;
 
 	tf2_ros::TransformBroadcaster br_w_s;

@@ -77,6 +77,7 @@ private:
 
 	geometry_msgs::Pose target_pose_;
 	geometry_msgs::Pose home_cart_pose_;
+	geometry_msgs::Pose static_bin_pose;
 
 	std::vector<double> home_joint_pose_;
 	std::vector<double> quality_cam_joint_position_;
@@ -131,6 +132,8 @@ public:
 	void SendRobotHome();
 	void dropInTrash();
 	void GoToQualityCamera();
+	void GoToBinStaticPosition();
+
 
 
 };

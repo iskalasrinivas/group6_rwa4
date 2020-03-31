@@ -46,10 +46,10 @@
 AriacOrderPart::AriacOrderPart(std::string part_type, geometry_msgs::Pose t_pose):part_type_(part_type), tray_pose_(t_pose), tfListener(tfBuffer) {
 
 	ros::AsyncSpinner async_spinner(4);
-
+	ROS_INFO_STREAM("New order object Created");
 	async_spinner.start();
 	worldTransformation();
-	ROS_INFO_STREAM("Order object Created");
+
 }
 AriacOrderPart::~AriacOrderPart() {}
 
@@ -140,19 +140,18 @@ void AriacOrderPart::worldTransformation(){
 //		ros::Duration(2.0).sleep();
 	}
 
-	ros::Duration(2.0).sleep();
+	ros::Duration(1.0).sleep();
 
 	try{
 				tf2::doTransform(tray_pose_, end_pose_, tS_w_b);
-//				end_pose_ = tray_pose_;
 			}
 			catch (tf2::TransformException &ex) {
 					ROS_WARN("exception while converting child frame pose to world frame");
 			    	ROS_WARN("%s",ex.what());
 			        ros::Duration(0.01).sleep();
 			}
-	ros::Duration(2.0).sleep();
-	ROS_ERROR_STREAM("TRAY P POSE : " << tray_pose_.position.x << "  " << tray_pose_.position.y << "  " <<tray_pose_.position.z);
-	ROS_ERROR_STREAM("END POSE : " << end_pose_.position.x << "  " << end_pose_.position.y << "  " <<end_pose_.position.z);
+	ros::Duration(1.0).sleep();
+	ROS_INFO_STREAM("Order Object in tray frame : " << tray_pose_.position.x << "  " << tray_pose_.position.y << "  " <<tray_pose_.position.z);
+	ROS_INFO_STREAM("Order Object in world frame : " << end_pose_.position.x << "  " << end_pose_.position.y << "  " <<end_pose_.position.z);
 }
 

@@ -320,6 +320,39 @@ void AriacOrderManager::pickPart(geometry_msgs::Pose world_part_pose, double y) 
 	}
 }
 
+void AriacOrderManager::pickfromBin(const geometry_msgs::Pose& part_pose) {
+	ROS_INFO_STREAM("Picking Part");
+	arm1_.GoToBinStaticPosition();
+
+
+	auto target_top_pose_1 = part_pose;
+//	target_top_pose_1.position.y += 0.5;
+	target_top_pose_1.position.z += 0.2;
+	arm1_.GoToTarget(target_top_pose_1);
+	ros::Duration(0.5).sleep();
+//	auto target_top_pose_2 = target_top_pose_1;
+////	target_top_pose_2.position.y -= 0.5;
+//	arm1_.GoToTarget(target_top_pose_2);
+	ros::Duration(0.5).sleep();
+	auto target_pose = part_pose;
+	target_pose.position.z += 0.1;
+	arm1_.GoToTarget(target_pose);
+	arm1_.GripperToggle(true);
+	if(!arm1_.isPartAttached()) {
+		while (!arm1_.isPartAttached()) {
+			target_pose.position.z -= 0.01;
+			arm1_.GoToTarget(target_pose);
+			ros::Duration(0.1).sleep();
+		}
+	}
+//	arm1_.GoToTarget(target_top_pose_2);
+	ros::Duration(0.5).sleep();
+	arm1_.GoToTarget(target_top_pose_1);
+	arm1_.GoToBinStaticPosition();
+	ros::Duration(0.5).sleep();
+
+}
+
 void AriacOrderManager::setConveyorPartsPicked(const bool & boolean) {
 	conveyor_parts_picked = boolean;
 }

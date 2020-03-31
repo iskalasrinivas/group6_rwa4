@@ -42,7 +42,7 @@
 #include <sensor.h>
 
 
-AriacSensorManager::AriacSensorManager() : order_manager_(& all_binParts, &sorted_all_binParts), is_faulty(false) {
+AriacSensorManager::AriacSensorManager() : order_manager_(& all_binParts, &sorted_all_binParts), is_faulty(false), tfListener(tfBuffer) {
 	ROS_INFO_STREAM(">>>>> Subscribing to logical sensors");
 	ros::AsyncSpinner async_spinner(4);
 	async_spinner.start();
@@ -107,7 +107,7 @@ std::vector<geometry_msgs::Pose>>> AriacSensorManager::getBinParts() {
 void AriacSensorManager::computeWorldTransformation
 (const geometry_msgs::Pose & sensor_pose, const geometry_msgs::Pose & part_pose, geometry_msgs::Pose & current_pose) {
 	auto current_time = ros::Time::now();
-	tf2_ros::TransformListener tfListener(tfBuffer);
+//	tf2_ros::TransformListener tfListener(tfBuffer);
 	transformStamped1.header.stamp = current_time;
 	transformStamped1.header.frame_id = "world";
 	transformStamped1.child_frame_id = "logical_sensor";
@@ -157,7 +157,7 @@ void AriacSensorManager::beltlogicalCameraCallback(const osrf_gear::LogicalCamer
 //	ROS_INFO_STREAM(">> belt logical camera called." << conveyor_order.size());
 	auto sensor_pose = image_msg->pose;
 	auto current_time = ros::Time::now();
-	tf2_ros::TransformListener tfListener(tfBuffer);
+//	tf2_ros::TransformListener tfListener(tfBuffer);
 
 	transformStamped1.header.stamp = current_time;
 	transformStamped1.header.frame_id = "world";
@@ -193,8 +193,10 @@ void AriacSensorManager::beltlogicalCameraCallback(const osrf_gear::LogicalCamer
 	}
 
 	if (tracking_part_ != nullptr) {
-//		ROS_INFO_STREAM(">> tracking_part_ is not null" );
+		ROS_INFO_STREAM(">> Picking Part from Conveyor Belt" );
 		order_manager_.pickPart(tracking_part_->pose, 0.12);
+		ROS_INFO_STREAM(">> GOing TO Quality Camera !!" );
+		order_manager_.getArmObject()->GoToQualityCamera();
 		if(order_manager_.getArmObject()->isAtQualitySensor()) {
 			if(is_faulty) {
 				ROS_WARN_STREAM("Part is faulty");
@@ -249,13 +251,15 @@ void AriacSensorManager::binlogicalCameraCallback
 	updateFaultyPartPose(faulty_part_);
 	if (order_manager_.isConveyorPartsPicked()) {
 		auto bin_order = order_manager_.getBinOrderParts();
-		auto conveyor_order = order_manager_.getConveyorOrderParts();
+//		auto conveyor_order = order_manager_.getConveyorOrderParts();
 //		ROS_INFO_STREAM(">> bin logical camera called." << conveyor_order.size());
 		for(auto vec_it = bin_order.begin(); vec_it != bin_order.end(); ++vec_it){
 			for(auto it = vec_it->second.begin(); it != vec_it->second.end(); ++it){
 				auto current_pose = (*it)->getCurrentPose();
 				auto end_pose = (*it)->getEndPose();
-				order_manager_.pickPart(current_pose, 0);
+				ROS_INFO_STREAM(" Picking " << (*it)->getPartType() << " from bin.");
+				order_manager_.pickfromBin(current_pose);
+				ROS_INFO_STREAM(" Going to quality camera from bin");
 				order_manager_.getArmObject()->GoToQualityCamera();
 				if(order_manager_.getArmObject()->isAtQualitySensor()) {
 					if(is_faulty) {
@@ -266,6 +270,7 @@ void AriacSensorManager::binlogicalCameraCallback
 						updateFaultyPartPose(part);
 						return;
 					} else {
+						ROS_INFO_STREAM("Dropping in AGV");
 						dropInAGV(end_pose);
 					}
 				}
@@ -273,6 +278,9 @@ void AriacSensorManager::binlogicalCameraCallback
 		}
 	}
 }
+
+
+
 
 void AriacSensorManager::binlogicalCameraCallback1
 (const osrf_gear::LogicalCameraImage::ConstPtr & image_msg ) {
@@ -308,7 +316,7 @@ void AriacSensorManager::setAllBinParts(const osrf_gear::LogicalCameraImage::Con
 //	ROS_INFO_STREAM("setAllBinParts called");
 	auto sensor_pose = image_msg->pose;
 	auto current_time = ros::Time::now();
-	tf2_ros::TransformListener tfListener(tfBuffer);
+
 	transformStamped1.header.stamp = current_time;
 	transformStamped1.header.frame_id = "world";
 	transformStamped1.child_frame_id = "logical_sensor";
@@ -356,9 +364,14 @@ void AriacSensorManager::qualityControlSensorCallback
 }
 
 void AriacSensorManager::dropInAGV(const geometry_msgs::Pose& end_pose){
-	order_manager_.getArmObject()->GoToAGV(end_pose);
+	auto target_pose_ = end_pose;
+	target_pose_.position.z += 0.02;
+	order_manager_.getArmObject()->GoToTarget(target_pose_);
+
 	order_manager_.getArmObject()->GripperToggle(false);
 	ros::Duration(0.05).sleep();
+	target_pose_.position.z += 0.4;
+	order_manager_.getArmObject()->GoToTarget(target_pose_);
 }
 
 

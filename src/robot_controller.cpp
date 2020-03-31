@@ -126,6 +126,11 @@ RobotController::RobotController(std::string arm_id) : robot_controller_nh_("/ar
 			"/ariac/arm1/gripper/control");
 	counter_ = 0;
 	drop_flag_ = false;
+
+	static_bin_pose.position.x = -0.20;
+	static_bin_pose.position.y = 0.0;
+	static_bin_pose.position.z = 0.95;
+	static_bin_pose.orientation = fixed_orientation_;
 }
 
 RobotController::~RobotController() {}
@@ -151,6 +156,10 @@ void RobotController::Execute() {
 		robot_move_group_.move();
 		ros::Duration(0.02).sleep();
 	}
+}
+
+void RobotController::GoToBinStaticPosition() {
+	GoToTarget(static_bin_pose);
 }
 
 void RobotController::GoToTarget(
@@ -230,6 +239,7 @@ void RobotController::GoToTarget(const geometry_msgs::Pose& pose) {
 void RobotController::GoToAGV(const geometry_msgs::Pose& pose) {
 	ROS_WARN_STREAM("placing in AGV HAHAHAHA	");
 	ros::AsyncSpinner spinner(4);
+//	pose.position.z += 0.1;
 	robot_move_group_.setPoseTarget(pose);
 	spinner.start();
 	if (this->Planner()) {
@@ -322,8 +332,8 @@ void RobotController::GoToQualityCamera(){
 	// ros::Duration(2.0).sleep();
 		robot_move_group_.setJointValueTarget(quality_cam_joint_position_);
 		// this->execute();
-		ros::AsyncSpinner spinner(4);
-		spinner.start();
+//		ros::AsyncSpinner spinner(4);
+//		spinner.start();
 		if (this->Planner()) {
 			robot_move_group_.move();
 			ros::Duration(0.05).sleep();

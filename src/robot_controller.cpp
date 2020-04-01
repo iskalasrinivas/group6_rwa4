@@ -89,15 +89,15 @@ RobotController::RobotController(std::string arm_id) : robot_controller_nh_("/ar
 	tf::Matrix3x3(q).getRPY(roll_def_,pitch_def_,yaw_def_);
 
 
-//	end__joint_position_ = {1.5, 1.5, -0.9, 1.9, 3.1, -1.59, 0.126};
-	
+	//	end__joint_position_ = {1.5, 1.5, -0.9, 1.9, 3.1, -1.59, 0.126};
+
 	//	end_position_[0] = 2.2;
 	//    end_position_[1] = 4.5;
 	//    end_position_[2] = 1.2;
-//    end_pose_.position.x = 0.0;
-//    end_pose_.position.y = 0.0;
-//    end_pose_.position.z = 0.0;
-//    end_pose_.orientation = fixed_orientation_;
+	//    end_pose_.position.x = 0.0;
+	//    end_pose_.position.y = 0.0;
+	//    end_pose_.position.z = 0.0;
+	//    end_pose_.orientation = fixed_orientation_;
 
 
 
@@ -131,6 +131,11 @@ RobotController::RobotController(std::string arm_id) : robot_controller_nh_("/ar
 	static_bin_pose.position.y = 0.0;
 	static_bin_pose.position.z = 0.95;
 	static_bin_pose.orientation = fixed_orientation_;
+	// r: 2.392647, p:1.438845, y:0.522735;
+	quality_static_pose.position.x = 0.19;
+	quality_static_pose.position.y = 3.25;
+	quality_static_pose.position.z = 1.15;
+	quality_static_pose.orientation = fixed_orientation_;
 }
 
 RobotController::~RobotController() {}
@@ -159,36 +164,147 @@ void RobotController::Execute() {
 }
 
 void RobotController::GoToBinStaticPosition() {
-	GoToTarget(static_bin_pose);
+	moveToTarget(static_bin_pose);
+	ros::Duration(1.0).sleep();
+	ROS_INFO_STREAM("At Bin safe Home position");
 }
 
+void RobotController::moveToTarget(geometry_msgs::Pose final_pose) {
+	std::vector<geometry_msgs::Pose> waypoints;
+	geometry_msgs::Pose dt_pose;
+	robot_tf_listener_.waitForTransform("world", "arm1_ee_link", ros::Time(0),
+			ros::Duration(10));
+	robot_tf_listener_.lookupTransform("/world", "/arm1_ee_link", ros::Time(0),
+			robot_tf_transform_);
+
+
+	current_pose_.position.x = robot_tf_transform_.getOrigin().x();
+	current_pose_.position.y = robot_tf_transform_.getOrigin().y();
+	current_pose_.position.z = robot_tf_transform_.getOrigin().z();
+	current_pose_.orientation.x = robot_tf_transform_.getRotation().x();
+	current_pose_.orientation.y = robot_tf_transform_.getRotation().y();
+	current_pose_.orientation.z = robot_tf_transform_.getRotation().z();
+	current_pose_.orientation.w = robot_tf_transform_.getRotation().w();
+
+	dt_pose.position.x =
+			(final_pose.position.x - current_pose_.position.x) / 10;
+	dt_pose.position.y =
+			(final_pose.position.y - current_pose_.position.y) / 10;
+	dt_pose.position.z =
+			(final_pose.position.z - current_pose_.position.z) / 10;
+	dt_pose.orientation.x = 0;
+	dt_pose.orientation.y = 0;
+	dt_pose.orientation.z = 0;
+	dt_pose.orientation.w = 0;
+
+	geometry_msgs::Pose next_pose;
+	for (int i = 1; i <= 10; i++) {
+		next_pose.position.x = current_pose_.position.x +
+				i * dt_pose.position.x;
+		next_pose.position.y = current_pose_.position.y +
+				i * dt_pose.position.y;
+		next_pose.position.z = current_pose_.position.z +
+				i * dt_pose.position.z;
+		next_pose.orientation.x = current_pose_.orientation.x +
+				i * dt_pose.orientation.x;
+		next_pose.orientation.y = current_pose_.orientation.y +
+				i * dt_pose.orientation.y;
+		next_pose.orientation.z = current_pose_.orientation.z +
+				i * dt_pose.orientation.z;
+		next_pose.orientation.w = current_pose_.orientation.w +
+				i * dt_pose.orientation.w;
+		GoToTarget(next_pose);
+		ros::Duration(1.0).sleep();
+	}
+	GoToTarget(final_pose);
+	ros::Duration(1.0).sleep();
+//	GoToTarget(waypoints);
+}
+
+void RobotController::moveToTargetinPieces(geometry_msgs::Pose final_pose) {
+	std::vector<geometry_msgs::Pose> waypoints;
+		geometry_msgs::Pose dt_pose;
+		robot_tf_listener_.waitForTransform("world", "arm1_ee_link", ros::Time(0),
+				ros::Duration(10));
+		robot_tf_listener_.lookupTransform("/world", "/arm1_ee_link", ros::Time(0),
+				robot_tf_transform_);
+
+
+		current_pose_.position.x = robot_tf_transform_.getOrigin().x();
+		current_pose_.position.y = robot_tf_transform_.getOrigin().y();
+		current_pose_.position.z = robot_tf_transform_.getOrigin().z();
+		current_pose_.orientation.x = robot_tf_transform_.getRotation().x();
+		current_pose_.orientation.y = robot_tf_transform_.getRotation().y();
+		current_pose_.orientation.z = robot_tf_transform_.getRotation().z();
+		current_pose_.orientation.w = robot_tf_transform_.getRotation().w();
+
+		dt_pose.position.x =
+				(final_pose.position.x - current_pose_.position.x) / 10;
+		dt_pose.position.y =
+				(final_pose.position.y - current_pose_.position.y) / 10;
+		dt_pose.position.z =
+				(final_pose.position.z - current_pose_.position.z) / 10;
+		dt_pose.orientation.x = 0;
+		dt_pose.orientation.y = 0;
+		dt_pose.orientation.z = 0;
+		dt_pose.orientation.w = 0;
+		double dpara = -0.1;
+
+		geometry_msgs::Pose next_pose;
+		for (int i,j = 1; i <= 10; i++,j++) {
+			if(i >= 6) {
+				j = 10 - i;
+			}
+//			dt_pose.position.x-=dpara;
+			next_pose.position.x = current_pose_.position.x +
+					i * dt_pose.position.x + j*dpara;
+			next_pose.position.y = current_pose_.position.y +
+					i * dt_pose.position.y;
+			next_pose.position.z = current_pose_.position.z +
+					i * dt_pose.position.z;
+//			next_pose.orientation.x = current_pose_.orientation.x +
+//					i * dt_pose.orientation.x;
+//			next_pose.orientation.y = current_pose_.orientation.y +
+//					i * dt_pose.orientation.y;
+//			next_pose.orientation.z = current_pose_.orientation.z +
+//					i * dt_pose.orientation.z;
+//			next_pose.orientation.w = current_pose_.orientation.w +
+//					i * dt_pose.orientation.w;
+//			waypoints.emplace_back(next_pose);
+			GoToTarget(next_pose);
+			ros::Duration(1.0).sleep();
+		}
+		GoToTarget(final_pose);
+		ros::Duration(1.0).sleep();
+
+}
 void RobotController::GoToTarget(
-        std::vector<geometry_msgs::Pose> waypoints) {
-    ros::AsyncSpinner spinner(4);
-    spinner.start();
+		std::vector<geometry_msgs::Pose> waypoints) {
+	ros::AsyncSpinner spinner(4);
+	spinner.start();
 
-    for (auto i : waypoints) {
-        i.orientation.x = fixed_orientation_.x;
-        i.orientation.y = fixed_orientation_.y;
-        i.orientation.z = fixed_orientation_.z;
-        i.orientation.w = fixed_orientation_.w;
-    }
+	for (auto i : waypoints) {
+		i.orientation.x = fixed_orientation_.x;
+		i.orientation.y = fixed_orientation_.y;
+		i.orientation.z = fixed_orientation_.z;
+		i.orientation.w = fixed_orientation_.w;
+	}
 
-    moveit_msgs::RobotTrajectory traj;
-    auto fraction =
-            robot_move_group_.computeCartesianPath(waypoints, 0.01, 0.0, traj, true);
+	moveit_msgs::RobotTrajectory traj;
+	auto fraction =
+			robot_move_group_.computeCartesianPath(waypoints, 0.01, 0.0, traj, true);
 
-    ROS_WARN_STREAM("Fraction: " << fraction * 100);
-    ros::Duration(0.05).sleep();
+	ROS_WARN_STREAM("Fraction: " << fraction * 100);
+	ros::Duration(0.05).sleep();
 
-    robot_planner_.trajectory_ = traj;
+	robot_planner_.trajectory_ = traj;
 
-    //if (fraction >= 0.3) {
-    robot_move_group_.execute(robot_planner_);
-    ros::Duration(0.05).sleep();
-    //    } else {
-    //        ROS_ERROR_STREAM("Safe Trajectory not found!");
-    //    }
+	//if (fraction >= 0.3) {
+	robot_move_group_.execute(robot_planner_);
+	ros::Duration(0.05).sleep();
+	//    } else {
+	//        ROS_ERROR_STREAM("Safe Trajectory not found!");
+	//    }
 }
 
 void RobotController::GoToTarget(
@@ -239,7 +355,7 @@ void RobotController::GoToTarget(const geometry_msgs::Pose& pose) {
 void RobotController::GoToAGV(const geometry_msgs::Pose& pose) {
 	ROS_WARN_STREAM("placing in AGV HAHAHAHA	");
 	ros::AsyncSpinner spinner(4);
-//	pose.position.z += 0.1;
+	//	pose.position.z += 0.1;
 	robot_move_group_.setPoseTarget(pose);
 	spinner.start();
 	if (this->Planner()) {
@@ -316,30 +432,41 @@ void RobotController::SendRobotHome() {
 
 void RobotController::dropInTrash(){
 	// ros::Duration(2.0).sleep();
-		robot_move_group_.setJointValueTarget(trash_bin_joint_position_);
-		// this->execute();
-		ros::AsyncSpinner spinner(4);
-		spinner.start();
-		if (this->Planner()) {
-			robot_move_group_.move();
-			ros::Duration(0.05).sleep();
-		}
-		GripperToggle(false);
+	robot_move_group_.setJointValueTarget(trash_bin_joint_position_);
+	// this->execute();
+	ros::AsyncSpinner spinner(4);
+	spinner.start();
+	if (this->Planner()) {
+		robot_move_group_.move();
 		ros::Duration(0.05).sleep();
+	}
+	GripperToggle(false);
+	ros::Duration(0.05).sleep();
 }
 
 void RobotController::GoToQualityCamera(){
 	// ros::Duration(2.0).sleep();
-		robot_move_group_.setJointValueTarget(quality_cam_joint_position_);
-		// this->execute();
-//		ros::AsyncSpinner spinner(4);
-//		spinner.start();
-		if (this->Planner()) {
-			robot_move_group_.move();
-			ros::Duration(0.05).sleep();
-		}
-		is_at_qualitySensor = true;
+	robot_move_group_.setJointValueTarget(quality_cam_joint_position_);
+	// this->execute();
+	//		ros::AsyncSpinner spinner(4);
+	//		spinner.start();
+	if (this->Planner()) {
+		robot_move_group_.move();
 		ros::Duration(0.05).sleep();
+	}
+	is_at_qualitySensor = true;
+	ros::Duration(0.05).sleep();
+}
+
+void RobotController::GoToQualityCameraFromBin(){
+	// ros::Duration(2.0).sleep();
+	moveToTargetinPieces(quality_static_pose);
+	is_at_qualitySensor = true;
+	// this->execute();
+	//		ros::AsyncSpinner spinner(4);
+	//		spinner.start();
+	ros::Duration(1.0).sleep();
+	ROS_INFO_STREAM("At quality camera check position");
 }
 
 

@@ -105,7 +105,6 @@ public:
 	void removeConveyorPart(AriacOrderPart*);
 	void removeBinPart(AriacOrderPart* orderPart);
 	void dropPartToAgv();
-	void moveToTarget(geometry_msgs::Pose);
 	void SubmitAGV(int);
 	ros::NodeHandle* getnode();
 	void setBinCameraCalled();

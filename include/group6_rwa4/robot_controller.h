@@ -75,9 +75,12 @@ private:
 	tf::TransformListener agv_tf_listener_;
 	tf::StampedTransform agv_tf_transform_;
 
+
 	geometry_msgs::Pose target_pose_;
 	geometry_msgs::Pose home_cart_pose_;
 	geometry_msgs::Pose static_bin_pose;
+	geometry_msgs::Pose quality_static_pose;
+	geometry_msgs::Pose current_pose_;
 
 	std::vector<double> home_joint_pose_;
 	std::vector<double> quality_cam_joint_position_;
@@ -110,6 +113,7 @@ public:
 	~RobotController();
 	bool Planner();
 	void Execute();
+	void moveToTarget(geometry_msgs::Pose);
 	void GoToTarget(std::vector<geometry_msgs::Pose> waypoints);
 	void GoToTarget(std::initializer_list<geometry_msgs::Pose>);
 	void GoToTarget(const geometry_msgs::Pose&);
@@ -133,6 +137,8 @@ public:
 	void dropInTrash();
 	void GoToQualityCamera();
 	void GoToBinStaticPosition();
+	void GoToQualityCameraFromBin();
+	void moveToTargetinPieces(geometry_msgs::Pose final_pose);
 
 
 

@@ -107,8 +107,8 @@ private:
 	osrf_gear::Model* tracking_part_;
 	geometry_msgs::Pose tracking_pose_in_sensor;
 	AriacOrderPart* faulty_part_;
-
-	
+	bool task_completed;
+	bool in_process;
 	bool is_faulty;
 	bool bin_part_faulty;
 

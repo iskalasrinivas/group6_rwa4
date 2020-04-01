@@ -69,9 +69,9 @@ void AriacOrderManager::OrderCallback
 	ROS_INFO_STREAM("no of orders "<< received_orders_.size() << std::endl);
 	setOrderParts();
 	while (!isBinCameraCalled) {
-		ROS_INFO_STREAM("bin camera is not called" << std::endl);
+		ROS_INFO_STREAM("Bin camera is not called" << std::endl);
 	}
-	ROS_INFO_STREAM("bin camera Called!! Starting segregating Orders." << std::endl);
+	ROS_INFO_STREAM("Bin camera Called!! Starting segregating Orders." << std::endl);
 	ros::Duration(1).sleep();
 	segregateOrders();
 }
@@ -158,18 +158,18 @@ void AriacOrderManager::segregateOrders() {
 
 	for (const auto &orderPart : all_orderParts) {
 		auto part_type = orderPart.first;
-		ROS_ERROR_STREAM( "order PArt type"<< part_type);
+//		ROS_INFO_STREAM( "order Part type :"<< part_type);
 		auto oVecPart =  orderPart.second;
 		if(sorted_all_binParts->count(part_type)) {
 			auto bin_vec = (*sorted_all_binParts)[part_type];
-			ROS_ERROR_STREAM( "order PArt type"<< bin_vec.front());
+//			ROS_INFO_STREAM( "order PArt type"<< bin_vec.front());
 			if(bin_vec.size() >= orderPart.second.size()) {
 				auto opart_it = oVecPart.begin();
 				auto bin_part = bin_vec.begin();
 
 				for(opart_it = oVecPart.begin(), bin_part = bin_vec.begin(); opart_it != oVecPart.end();++opart_it, ++bin_part) {
 					(*opart_it)->setCurrentPose(*bin_part);
-					ROS_WARN_STREAM( "order Type and Current Pose from bin"<<(*opart_it)->getPartType() << " " << (*opart_it)->getCurrentPose());
+//					ROS_WARN_STREAM( "order Type and Current Pose from bin"<<(*opart_it)->getPartType() << " " << (*opart_it)->getCurrentPose());
 				}
 //				setCurrentPose(oVecPart, (*sorted_all_binParts)[part_type]);
 				bin_order_parts.insert({part_type, oVecPart});
@@ -185,10 +185,10 @@ void AriacOrderManager::segregateOrders() {
 
 
 	for (auto it1_part : bin_order_parts) {
-		ROS_INFO_STREAM("From Bin :  Type of Part " << it1_part.first << " Num of Parts "<< it1_part.second.size()<<std::endl);
+		ROS_INFO_STREAM("Parts to be picked from Bin :  Type of Part " << it1_part.first << ", Num of Parts : "<< it1_part.second.size()<<std::endl);
 	}
 	for (auto it2_part : conveyor_order_parts) {
-		ROS_INFO_STREAM("From Belt : Type of Part " << it2_part.first << " Num of Parts "<< it2_part.second.size()<<std::endl);
+		ROS_INFO_STREAM("Parts to be picked from Belt : Type of Part " << it2_part.first << ", Num of Parts : "<< it2_part.second.size()<<std::endl);
 	}
 }
 
@@ -241,41 +241,7 @@ void AriacOrderManager::dropPartToAgv() {
 
 }
 
-void AriacOrderManager::moveToTarget(geometry_msgs::Pose final_pose) {
-	std::vector<geometry_msgs::Pose> waypoints;
-	geometry_msgs::Pose dt_pose;
 
-	dt_pose.position.x =
-			(final_pose.position.x - arm1_.getHomeCartPose().position.x) / 10;
-	dt_pose.position.y =
-			(final_pose.position.y - arm1_.getHomeCartPose().position.y) / 10;
-	dt_pose.position.z =
-			(final_pose.position.z - arm1_.getHomeCartPose().position.z) / 10;
-	dt_pose.orientation.x = 0;
-	dt_pose.orientation.y = 0;
-	dt_pose.orientation.z = 0;
-	dt_pose.orientation.w = 0;
-
-	geometry_msgs::Pose current_pose;
-	for (int i = 1; i <= 10; i++) {
-		current_pose.position.x = arm1_.getHomeCartPose().position.x +
-				i * dt_pose.position.x;
-		current_pose.position.y = arm1_.getHomeCartPose().position.y +
-				i * dt_pose.position.y;
-		current_pose.position.z = arm1_.getHomeCartPose().position.z +
-				i * dt_pose.position.z;
-		current_pose.orientation.x = arm1_.getHomeCartPose().orientation.x +
-				i * dt_pose.orientation.x;
-		current_pose.orientation.y = arm1_.getHomeCartPose().orientation.y +
-				i * dt_pose.orientation.y;
-		current_pose.orientation.z = arm1_.getHomeCartPose().orientation.z +
-				i * dt_pose.orientation.z;
-		current_pose.orientation.w = arm1_.getHomeCartPose().orientation.w +
-				i * dt_pose.orientation.w;
-		waypoints.emplace_back(current_pose);
-	}
-	arm1_.GoToTarget(waypoints);
-}
 
 bool AriacOrderManager::inVicinity(const geometry_msgs::Pose& world_part_pose) {
 	double threshold_z = 0.1;
@@ -335,32 +301,34 @@ void AriacOrderManager::pickPart(geometry_msgs::Pose world_part_pose, double y) 
 
 void AriacOrderManager::pickfromBin(const geometry_msgs::Pose& part_pose) {
 	ROS_INFO_STREAM("Picking Part");
+	ros::Duration(0.5).sleep();
 	arm1_.GoToBinStaticPosition();
-
+	ros::Duration(0.5).sleep();
 
 	auto target_top_pose_1 = part_pose;
 //	target_top_pose_1.position.y += 0.5;
 	target_top_pose_1.position.z += 0.2;
 	arm1_.GoToTarget(target_top_pose_1);
-	ros::Duration(0.5).sleep();
+	ros::Duration(1.0).sleep();
 //	auto target_top_pose_2 = target_top_pose_1;
 ////	target_top_pose_2.position.y -= 0.5;
 //	arm1_.GoToTarget(target_top_pose_2);
-	ros::Duration(0.5).sleep();
+//	ros::Duration(0.5).sleep();
 	auto target_pose = part_pose;
 	target_pose.position.z += 0.1;
 	arm1_.GoToTarget(target_pose);
 	arm1_.GripperToggle(true);
 	if(!arm1_.isPartAttached()) {
 		while (!arm1_.isPartAttached()) {
-			target_pose.position.z -= 0.005;
+			target_pose.position.z -= 0.02;
 			arm1_.GoToTarget(target_pose);
-			ros::Duration(0.1).sleep();
+			ros::Duration(0.5).sleep();
 		}
 	}
 //	arm1_.GoToTarget(target_top_pose_2);
 	ros::Duration(0.5).sleep();
 	arm1_.GoToTarget(target_top_pose_1);
+	ros::Duration(0.5).sleep();
 	arm1_.GoToBinStaticPosition();
 	ros::Duration(0.5).sleep();
 
@@ -369,6 +337,7 @@ void AriacOrderManager::pickfromBin(const geometry_msgs::Pose& part_pose) {
 void AriacOrderManager::setConveyorPartsPicked(const bool & boolean) {
 	conveyor_parts_picked = boolean;
 }
+
 
 bool AriacOrderManager::isConveyorPartsPicked() {
 	return conveyor_parts_picked;

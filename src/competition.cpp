@@ -56,7 +56,7 @@
 #include "competition.h"
 
 Competition::Competition()
-: current_score_(0), arm_1_has_been_zeroed_(false), arm_2_has_been_zeroed_(false){
+: current_score_(0), arm_1_has_been_zeroed_(false), arm_2_has_been_zeroed_(false) {
 
 	//	manager_(&comp_nh_);
 	ros::AsyncSpinner async_spinner(4);

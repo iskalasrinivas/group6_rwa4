@@ -322,21 +322,6 @@ void AriacSensorManager::SortAllBinParts() {
 			}
 		}
 	}
-	// for (auto it = sorted_all_binParts.begin(); it != sorted_all_binParts.end();++it) {
-	// 		ROS_WARN_STREAM("Sorted : " << it->first << it->second.size());
-	// }
-	// for (auto it = all_binParts["cam1"].begin(); it != all_binParts["cam1"].end();++it) {
-	// 	for (auto p = it->second.begin(); p != it->second.end();++p) {
-	// 		ROS_ERROR_STREAM("All parts cam1 : " << it->first << " "<< p->position.y);
-
-	// 	}
-	// }
-	// for (auto it = all_binParts["cam2"].begin(); it != all_binParts["cam2"].end();++it) {
-	// 		for (auto p = it->second.begin(); p != it->second.end();++p) {
-	// 			ROS_ERROR_STREAM("All parts cam2 : " << it->first << " "<< p->position.y);
-
-	// 		}
-	// 	}
 }
 
 void AriacSensorManager::setAllBinParts(const osrf_gear::LogicalCameraImage::ConstPtr & image_msg, std::string cam_name) {
@@ -398,8 +383,6 @@ void AriacSensorManager::setAllBinParts(const osrf_gear::LogicalCameraImage::Con
 		}
 		geometry_msgs::Pose pose;
 		setPose(transformStamped3, pose);
-		//		ROS_INFO_STREAM("Part Type" << it->type);
-		//		ROS_INFO_STREAM("BIN PART POSE : " << pose.position.x << "  " << pose.position.y << "  " <<pose.position.z);
 		all_binParts[cam_name][partType].push_back(pose);
 
 	}
@@ -425,35 +408,3 @@ void AriacSensorManager::dropInAGV(const geometry_msgs::Pose& end_pose){
 	target_pose_.position.z += 0.4;
 	order_manager_.getArmObject()->GoToTarget(target_pose_);
 }
-
-
-//void AriacSensorManager::computeWorldTransformation(const geometry_msgs::TransformStamped &transformStamped1, 
-//                          const geometry_msgs::TransformStamped &transformStamped2,geometry_msgs::TransformStamped &transformStamped3                      ) {
-// 	auto current_time = ros::Time::now();
-// //	tf2_ros::TransformListener tfListener(tfBuffer);
-// 	transformStamped1.header.stamp = current_time;
-// 	transformStamped1.header.frame_id = "world";
-// 	transformStamped1.child_frame_id = "logical_sensor";
-
-// 	transformStamped2.header.stamp = current_time;
-// 	transformStamped2.header.frame_id = "logical_sensor";
-// 	transformStamped2.child_frame_id = "logical_sensor_child";
-
-// 	setPose(sensor_pose, transformStamped1);
-// 	br_w_s.sendTransform(transformStamped1);
-// 	ros::Duration(0.001).sleep();
-// 	setPose(part_pose, transformStamped2);
-// 	br_s_c.sendTransform(transformStamped2);
-// 	ros::Duration(0.001).sleep();
-// 	try {
-// 		transformStamped3 = tfBuffer.lookupTransform
-// 				("world", "logical_sensor_child",
-// 						ros::Time(0));
-// 		setPose(transformStamped3, current_pose);
-// 	}
-// 	catch (tf2::TransformException &ex) {
-// 		ROS_WARN("exception");
-// 		ROS_WARN("%s", ex.what());
-// 		ros::Duration(0.001).sleep();
-// 	}
-// }

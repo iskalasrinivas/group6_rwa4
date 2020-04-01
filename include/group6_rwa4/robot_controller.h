@@ -122,11 +122,9 @@ public:
 	void GoToTarget(const geometry_msgs::Pose&);
 	void GoToAGV(const geometry_msgs::Pose&);
 
-//	bool DropPart(geometry_msgs::Pose);
 	void GripperToggle(const bool&);
 	void GripperCallback(const osrf_gear::VacuumGripperState::ConstPtr&);
 	void GripperStateCheck(geometry_msgs::Pose);
-//	bool PickPart(geometry_msgs::Pose&);
 	bool isPartAttached();
 	bool isAtQualitySensor();
 	void setAtQualitySensor();

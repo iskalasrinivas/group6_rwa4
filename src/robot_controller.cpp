@@ -63,7 +63,7 @@ RobotController::RobotController(std::string arm_id) : robot_controller_nh_("/ar
 	robot_move_group_.setMaxAccelerationScalingFactor(0.9);
 	// robot_move_group_.setEndEffector("moveit_ee");
 	robot_move_group_.allowReplanning(true);
-	collisionAvoidance();
+//	collisionAvoidance();
 	home_joint_pose_ =  {0.1, 3.14,  -2.7,-1.0, 2.1, -1.59, 0.126};
 	quality_cam_joint_position_ = {1.18, 1.26,  -0.38, 1.13, 2.26, -1.51, 0.0};
 	trash_bin_joint_position_ = {1.18, 3.02,  -0.63, -2.01, 3.52, -1.51, 0.0};
@@ -89,19 +89,6 @@ RobotController::RobotController(std::string arm_id) : robot_controller_nh_("/ar
 
 	tf::quaternionMsgToTF(fixed_orientation_,q);
 	tf::Matrix3x3(q).getRPY(roll_def_,pitch_def_,yaw_def_);
-
-
-	//	end__joint_position_ = {1.5, 1.5, -0.9, 1.9, 3.1, -1.59, 0.126};
-
-	//	end_position_[0] = 2.2;
-	//    end_position_[1] = 4.5;
-	//    end_position_[2] = 1.2;
-	//    end_pose_.position.x = 0.0;
-	//    end_pose_.position.y = 0.0;
-	//    end_pose_.position.z = 0.0;
-	//    end_pose_.orientation = fixed_orientation_;
-
-
 
 	robot_tf_listener_.waitForTransform("world", "arm1_ee_link", ros::Time(0),
 			ros::Duration(10));
@@ -182,10 +169,8 @@ void RobotController::collisionAvoidance(){
 	 collision_object.primitive_poses.push_back(box_pose);
 	 collision_object.operation = collision_object.ADD;
 
-//	 std::vector<moveit_msgs::CollisionObject> collision_objects;
 	 collision_objects.push_back(collision_object);
 
-	 // Now, let's add the collision object into the world
 	 ROS_INFO_NAMED("tutorial", "Add an object into the world");
 	 planning_scene_interface.addCollisionObjects(collision_objects);
 

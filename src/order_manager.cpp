@@ -306,14 +306,10 @@ void AriacOrderManager::pickfromBin(const geometry_msgs::Pose& part_pose) {
 	ros::Duration(0.5).sleep();
 
 	auto target_top_pose_1 = part_pose;
-//	target_top_pose_1.position.y += 0.5;
 	target_top_pose_1.position.z += 0.2;
 	arm1_.GoToTarget(target_top_pose_1);
 	ros::Duration(1.0).sleep();
-//	auto target_top_pose_2 = target_top_pose_1;
-////	target_top_pose_2.position.y -= 0.5;
-//	arm1_.GoToTarget(target_top_pose_2);
-//	ros::Duration(0.5).sleep();
+
 	auto target_pose = part_pose;
 	target_pose.position.z += 0.1;
 	arm1_.GoToTarget(target_pose);
@@ -325,7 +321,6 @@ void AriacOrderManager::pickfromBin(const geometry_msgs::Pose& part_pose) {
 			ros::Duration(0.5).sleep();
 		}
 	}
-//	arm1_.GoToTarget(target_top_pose_2);
 	ros::Duration(0.5).sleep();
 	arm1_.GoToTarget(target_top_pose_1);
 	ros::Duration(0.5).sleep();
@@ -346,65 +341,3 @@ bool AriacOrderManager::isConveyorPartsPicked() {
 RobotController* AriacOrderManager::getArmObject(){
 	return &arm1_;
 }
-
-//  void AriacOrderManager::pathplanning
-//  (const geometry_msgs::TransformStamped& msg) {
-//  segregateOrders();
-//  while(conveyor_order_parts.size() != 0) {
-//
-//
-//    pickPart(msg, 0.2);
-//    std::string picked_part_id = identify_part();
-//    removeConveyorPart(picked_part_id);
-//    dropPartToAgv();
-//    move_to_home_position();
-//  }
-//
-//  while(bin_order_parts.size() != 0) {
-//
-//
-//    pick_part_from_bin(msg);
-//    std::string picked_part_id = identify_part();
-//    removeBinPart(picked_part_id);
-//    dropPartToAgv();
-//    move_to_home_position();
-//
-//  }
-//}
-//
-//void AriacOrderManager::segregateOrders() {
-//	for (auto it_part : all_orderParts) {
-//		ROS_INFO_STREAM("segregate Orders Called ! Type of Part " << it_part.first << " Num of Parts "<< it_part.second.size()<<std::endl);
-//	}
-//	for (auto cam_it : *all_binParts) {
-//		for (auto part_it : cam_it.second) {
-//			ROS_INFO_STREAM("camera " << cam_it.first << " Part type "<< part_it.first<< " "<< part_it.second.size()<<std::endl);
-//		}
-//	}
-//	for (const auto &orderPart : all_orderParts) {
-//		for (const auto &binPart : *all_binParts) {
-//			auto oVecPart = orderPart.second;
-//			auto oType = orderPart.first;
-//			auto binMapPart = binPart.second;
-//			for (auto bPart : binMapPart) {
-//				if (oType == bPart.first && bPart.second.size() > oVecPart.size()) {
-//					setCurrentPose(oVecPart, bPart.second);
-//					bin_order_parts.insert({oType, oVecPart});
-//					// } else if(oType ==
-//					// bPart.first && bPart.second.size() < oVecPart.size()){
-//					// setCurrentPose(oVecPart, bPart.second);
-//					// bin_order_parts.insert({oType, oVecPart});
-//					// conveyor_order_parts.insert({oType, oVecPart});
-//				} else {
-//					conveyor_order_parts.insert({oType, oVecPart});
-//				}
-//			}
-//		}
-//	}
-//	for (auto it1_part : bin_order_parts) {
-//		ROS_INFO_STREAM("From Bin :  Type of Part " << it1_part.first << " Num of Parts "<< it1_part.second.size()<<std::endl);
-//	}
-//	for (auto it2_part : conveyor_order_parts) {
-//		ROS_INFO_STREAM("From Belt : Type of Part " << it2_part.first << " Num of Parts "<< it2_part.second.size()<<std::endl);
-//	}
-//}

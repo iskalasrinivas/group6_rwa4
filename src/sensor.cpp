@@ -40,6 +40,8 @@
  */
 
 #include <sensor.h>
+#include <std_msgs/String.h>
+#include <std_srvs/Trigger.h>
 
 
 AriacSensorManager::AriacSensorManager() : order_manager_(& all_binParts, &sorted_all_binParts), is_faulty(false),task_completed(false), in_process(false), tf_listener_belt(tf_buffer_belt),
@@ -262,11 +264,34 @@ void AriacSensorManager::binlogicalCameraCallback
 		}
 
 	} else {
+		ros::Duration(.0).sleep();
 		ROS_INFO_STREAM("Task Completed !!!");
+		EndCompetition();
+		ros::waitForShutdown();
+
 	}
 
 }
 
+void AriacSensorManager::EndCompetition() {
+	ros::ServiceClient start_client =
+			sensor_nh_.serviceClient<std_srvs::Trigger>("/ariac/end_competition");
+
+	if (!start_client.exists()) {
+		ROS_INFO("Waiting for the competition to be End...");
+		start_client.waitForExistence();
+		ROS_INFO("Competition  now Ended.");
+	}
+	ROS_INFO("Requesting competition End...");
+	std_srvs::Trigger srv;
+	start_client.call(srv);
+	if (!srv.response.success) {
+		ROS_ERROR_STREAM(
+				"Failed to End the competition: " << srv.response.message);
+	} else {
+		ROS_INFO("Competition Ended!");
+	}
+}
 
 
 void AriacSensorManager::binlogicalCameraCallback1
@@ -392,11 +417,11 @@ void AriacSensorManager::qualityControlSensorCallback
 
 void AriacSensorManager::dropInAGV(const geometry_msgs::Pose& end_pose){
 	auto target_pose_ = end_pose;
-	target_pose_.position.z += 0.02;
+	target_pose_.position.z += 0.05;
 	order_manager_.getArmObject()->GoToTarget(target_pose_);
-
+	ros::Duration(0.1).sleep();
 	order_manager_.getArmObject()->GripperToggle(false);
-	ros::Duration(0.05).sleep();
+	ros::Duration(0.1).sleep();
 	target_pose_.position.z += 0.4;
 	order_manager_.getArmObject()->GoToTarget(target_pose_);
 }

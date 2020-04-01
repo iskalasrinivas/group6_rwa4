@@ -41,6 +41,8 @@
 
 #include <tf/transform_listener.h>
 #include <tf2_ros/transform_broadcaster.h>
+#include <moveit_msgs/AttachedCollisionObject.h>
+#include <moveit_msgs/CollisionObject.h>
 #include <robot_controller.h>
 
 /**
@@ -61,7 +63,7 @@ RobotController::RobotController(std::string arm_id) : robot_controller_nh_("/ar
 	robot_move_group_.setMaxAccelerationScalingFactor(0.9);
 	// robot_move_group_.setEndEffector("moveit_ee");
 	robot_move_group_.allowReplanning(true);
-
+	collisionAvoidance();
 	home_joint_pose_ =  {0.1, 3.14,  -2.7,-1.0, 2.1, -1.59, 0.126};
 	quality_cam_joint_position_ = {1.18, 1.26,  -0.38, 1.13, 2.26, -1.51, 0.0};
 	trash_bin_joint_position_ = {1.18, 3.02,  -0.63, -2.01, 3.52, -1.51, 0.0};
@@ -153,6 +155,43 @@ bool RobotController::Planner() {
 
 	return plan_success_;
 }
+
+void RobotController::collisionAvoidance(){
+
+	 collision_object.header.frame_id = robot_move_group_.getPlanningFrame();
+
+	 // The id of the object is used to identify it.
+	 collision_object.id = "box1";
+
+	 // Define a box to add to the world.
+	 shape_msgs::SolidPrimitive primitive;
+	 primitive.type = primitive.BOX;
+	 primitive.dimensions.resize(3);
+	 primitive.dimensions[0] = 0.1;
+	 primitive.dimensions[1] = 0.1;
+	 primitive.dimensions[2] = 0.1;
+
+	 // Define a pose for the box (specified relative to frame_id)
+	 geometry_msgs::Pose box_pose;
+	 box_pose.orientation.w = 1.0;
+	 box_pose.position.x = -0.30;
+	 box_pose.position.y = -0.38;
+	 box_pose.position.z = 1.2;
+
+	 collision_object.primitives.push_back(primitive);
+	 collision_object.primitive_poses.push_back(box_pose);
+	 collision_object.operation = collision_object.ADD;
+
+//	 std::vector<moveit_msgs::CollisionObject> collision_objects;
+	 collision_objects.push_back(collision_object);
+
+	 // Now, let's add the collision object into the world
+	 ROS_INFO_NAMED("tutorial", "Add an object into the world");
+	 planning_scene_interface.addCollisionObjects(collision_objects);
+
+}
+
+
 
 void RobotController::Execute() {
 	ros::AsyncSpinner spinner(4);
@@ -468,9 +507,3 @@ void RobotController::GoToQualityCameraFromBin(){
 	ros::Duration(1.0).sleep();
 	ROS_INFO_STREAM("At quality camera check position");
 }
-
-
-
-
-
-

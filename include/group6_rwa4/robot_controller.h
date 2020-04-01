@@ -64,8 +64,7 @@
 class RobotController {
 private:
 	ros::NodeHandle robot_controller_nh_;
-	moveit::planning_interface::MoveGroupInterface::
-	Options robot_controller_options;
+	moveit::planning_interface::MoveGroupInterface::Options robot_controller_options;
 	ros::ServiceClient gripper_client_;
 	ros::NodeHandle gripper_nh_;
 	ros::Subscriber gripper_subscriber_;
@@ -86,8 +85,12 @@ private:
 	std::vector<double> quality_cam_joint_position_;
 	std::vector<double> trash_bin_joint_position_;
 
+	moveit_msgs::CollisionObject collision_object;
+	std::vector<moveit_msgs::CollisionObject> collision_objects;
+
 
 	moveit::planning_interface::MoveGroupInterface robot_move_group_;
+	moveit::planning_interface::PlanningSceneInterface planning_scene_interface;
 	moveit::planning_interface::MoveGroupInterface::Plan robot_planner_;
 
 	osrf_gear::VacuumGripperControl gripper_service_;
@@ -139,6 +142,7 @@ public:
 	void GoToBinStaticPosition();
 	void GoToQualityCameraFromBin();
 	void moveToTargetinPieces(geometry_msgs::Pose final_pose);
+	void collisionAvoidance();
 
 
 

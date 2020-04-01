@@ -134,6 +134,7 @@ public:
 	void agvLogicalCameraCallback(const osrf_gear::LogicalCameraImage::ConstPtr &);
 	void dropInAGV(const geometry_msgs::Pose &);
 	void SortAllBinParts();
+	void EndCompetition();
 // void computeWorldTransformation(const geometry_msgs::Pose &, const geometry_msgs::Pose & , geometry_msgs::Pose & );
 };
 
